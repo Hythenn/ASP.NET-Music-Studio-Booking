@@ -6,8 +6,8 @@
         <p class="hero-subtitle">Your Student-Built Music Studio Booking Platform</p>
         <p class="hero-description">Created by Mapúa students, for students. Book professional recording studios, rent instruments, and bring your musical ideas to life with our affordable, creator-focused platform.</p>
         <div class="hero-buttons">
-            <a href="studios.html" class="btn btn-primary">Explore Studios</a>
-            <a href="booking.html" class="btn btn-secondary">Book Now</a>
+            <a href="studios.aspx" class="btn btn-primary">Explore Studios</a>
+            <a href="booking.aspx" class="btn btn-secondary">Book Now</a>
         </div>
     </div>
 </section>

@@ -13,5 +13,19 @@ namespace Music_Studio_Booking
 		{
 
 		}
-	}
+        protected void btnBook_Click(object sender, EventArgs e)
+        {
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx?msg=login_required");
+            }
+            else
+            {
+                LinkButton btn = (LinkButton)sender;
+                string selectedRoom = btn.CommandArgument;
+
+                Response.Redirect("Booking.aspx?room=" + Server.UrlEncode(selectedRoom));
+            }
+        }
+    }
 }

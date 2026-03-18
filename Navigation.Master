@@ -8,32 +8,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studios - G-Studio Music Booking</title>
     <link rel="stylesheet" href="css/style.css">
-
-
-
 </head>
-<header>
-    <nav>
-        <div class="logo">G-Studio Music Booking</div>
-        <ul class="nav-links">
-            <li><a href="Home.aspx">Home</a></li>
-            <li><a href="Studios.aspx">Studios</a></li>
-            <li><a href="About.aspx">About</a></li>
-            <li><a href="Contact.aspx">Contact</a></li>
-            <li><a href="Login.aspx">Login</a></li>
-            <li><a href="Signup.aspx">Sign Up</a></li>
-        </ul>
-    </nav>
-</header>
-<body>
-    <form id="form1" runat="server">
+<body class="body">
+    <form id="form1" runat="server"> <header>
+            <nav>
+                <div class="logo">G-Studio Music Booking</div>
+                <ul class="nav-links">
+                    <li><a href="Home.aspx">Home</a></li>
+                    <li><a href="Studios.aspx">Studios</a></li>
+                    <li><a href="About.aspx">About</a></li>
+                    <li><a href="Contact.aspx">Contact</a></li>
+
+                    <asp:PlaceHolder ID="phGuest" runat="server">
+                        <li><a href="Login.aspx">Login</a></li>
+                        <li><a href="Signup.aspx">Sign Up</a></li>
+                    </asp:PlaceHolder>
+
+                    <asp:PlaceHolder ID="phUser" runat="server" Visible="false">
+                        <li><a href="Account.aspx".aspx".aspx">My Account</a></li>
+                        <li><asp:LinkButton ID="btnLogout" runat="server" OnClick="btnLogout_Click">Logout</asp:LinkButton></li>
+                    </asp:PlaceHolder>
+                </ul>
+            </nav>
+        </header>
+
         <div>
             <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
             </asp:ContentPlaceHolder>
         </div>
-    </form>
-        <div class="container">
+
+        <footer>
             <p>&copy; 2026 G-Studio Music Booking | Mapúa Malayan Colleges Laguna Student Project</p>
-        </div>
-</body>
-</html>
+        </footer>
+
+    </form> </body></html>
