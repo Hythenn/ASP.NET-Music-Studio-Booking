@@ -14,23 +14,25 @@
             <form id="signupForm">
                 <div class="form-group">
                     <label for="signupName">Name</label>
-                    <input type="text" id="signupName" name="name" required>
+                    <asp:TextBox runat="server" type="text" id="signupName"> </asp:TextBox>
                 </div>
                 <div class="form-group">
                     <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" name="email" required>
+                    <asp:TextBox runat="server" type="email" id="signupEmail"> </asp:TextBox>
                 </div>
                 <div class="form-group">
                     <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" name="password" required>
+                    <asp:TextBox runat="server"  type="password" id="signupPassword"> </asp:TextBox>
                 </div>
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <asp:TextBox runat="server" type="password" id="signupconfirmPassword"> </asp:TextBox>
                 </div>
-                <button type="submit" class="btn-gold">Sign Up</button>
+                <asp:Button ID="btnSignup" runat="server" Text="Sign Up" CssClass="btn-gold" OnClick="btnSignUp_Click" />
+
+                <asp:Label ID="lblErrorMessage" runat="server" ForeColor="Red"></asp:Label>
             </form>
-            <p>Already have an account? <a href="login.html">Login here</a></p>
+            <p>Already have an account? <a href="login.aspx">Login here</a></p>
         </div>
     </div>
 </section>

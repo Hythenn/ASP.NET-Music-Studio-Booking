@@ -14,13 +14,14 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" name="email" required>
+                    <asp:TextBox runat="server" type="email" id="loginEmail"> </asp:TextBox>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" name="password" required>
+                    <asp:TextBox runat="server" type="password" id="loginPassword" textmode="Password"> </asp:TextBox>
                 </div>
-                <button type="submit" class="btn-gold">Login</button>
+                <asp:Button runat="server" id="btnlogin" type="submit" class="btn-gold" onclick="btnlogin_Click" Text="Login"/>
+                <asp:Label ID="lblLoginError" runat="server" ForeColor="Red"></asp:Label>
             </form>
             <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
         </div>
