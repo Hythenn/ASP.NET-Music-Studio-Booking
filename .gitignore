@@ -1,0 +1,32 @@
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# ASP.NET / IIS
+App_Data/*.mdf
+App_Data/*.ldf
+*.publishsettings
+*.pubxml
+*.pubxml.user
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+
+# Logs
+*.log
+
