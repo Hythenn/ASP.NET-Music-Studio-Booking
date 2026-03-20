@@ -51,6 +51,15 @@ namespace Music_Studio_Booking
         protected global::System.Web.UI.WebControls.CheckBoxList cblInstruments;
 
         /// <summary>
+        /// lblTotalPriceDisplay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTotalPriceDisplay;
+
+        /// <summary>
         /// btnRequestBooking control.
         /// </summary>
         /// <remarks>
