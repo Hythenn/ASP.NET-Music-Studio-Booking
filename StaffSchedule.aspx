@@ -14,10 +14,9 @@
                 <p>Grouped by date so staff can quickly see who is in which studio.</p>
             </div>
 
-            <asp:Panel ID="PanelEmptySchedule" runat="server" CssClass="empty-state" Visible="false">
-                <h3>No bookings in the schedule yet</h3>
-                <p>Accepted bookings will appear in this overview.</p>
-            </asp:Panel>
+
+            <!--SHOW IF NO RESULTS FOUND FROM DATABASE -->
+            <asp:Panel ID="PanelEmptySchedule" runat="server" CssClass="empty-state" Visible="false"></asp:Panel>
 
             <asp:Repeater ID="rptSchedule" runat="server" OnItemDataBound="rptSchedule_ItemDataBound">
                 <ItemTemplate>
