@@ -38,7 +38,9 @@
                                             <span class="schedule-customer"><%# Eval("CustomerName") %></span>
                                         </div>
                                         <div class="schedule-notes">
-                                            <%# Eval("Notes") %>
+                                            <%# string.IsNullOrEmpty(Eval("SelectedInstruments").ToString()) ? "No instruments" : Eval("SelectedInstruments").ToString() %>
+                                            &nbsp;&bull;&nbsp;
+                                            <strong><%# Eval("TotalPriceDisplay") %></strong>
                                         </div>
                                     </div>
                                 </ItemTemplate>
@@ -50,4 +52,3 @@
         </div>
     </section>
 </asp:Content>
-
