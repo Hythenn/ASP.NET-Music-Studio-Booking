@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,24 +11,14 @@ namespace Music_Studio_Booking
 	{
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] != null)
-            {
-                phGuest.Visible = false;
-                phUser.Visible = true;
-            }
-            else
-            {
-                phGuest.Visible = true;
-                phUser.Visible = false;
-            }
+            bool isAdmin = Session["IsAdmin"] != null && Session["IsAdmin"].ToString() == "True";
+            bool isUser = Session["UserID"] != null;
+
+            phGuest.Visible = !isAdmin && !isUser;
+            phUser.Visible = !isAdmin && isUser;
+            phAdmin.Visible = isAdmin;
+            phPublicLinks.Visible = !isAdmin;
         }
 
-        protected void btnLogout_Click(object sender, EventArgs e)
-        {
-            Session.Abandon();
-            Session.Clear();
-
-            Response.Redirect("Home.aspx");
-        }
     }
 }

@@ -92,6 +92,7 @@
     <Content Include="Login.aspx" />
     <Content Include="Signup.aspx" />
     <Content Include="Booking.aspx" />
+    <Content Include="Profile.aspx" />
     <Content Include="StaffRequests.aspx" />
     <Content Include="StaffSchedule.aspx" />
     <Content Include="Logout.aspx" />
@@ -153,6 +154,13 @@
     </Compile>
     <Compile Include="Booking.aspx.designer.cs">
       <DependentUpon>Booking.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Profile.aspx.cs">
+      <DependentUpon>Profile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Profile.aspx.designer.cs">
+      <DependentUpon>Profile.aspx</DependentUpon>
     </Compile>
     <Compile Include="StaffRequests.aspx.cs">
       <DependentUpon>StaffRequests.aspx</DependentUpon>

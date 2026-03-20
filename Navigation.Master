@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Navigation.master.cs" Inherits="Music_Studio_Booking.Navigation" %>
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Navigation.master.cs" Inherits="Music_Studio_Booking.Navigation" %>
 
 <!DOCTYPE html>
 
@@ -15,18 +15,29 @@
                 <div class="logo">G-Studio Music Booking</div>
                 <ul class="nav-links">
                     <li><a href="Home.aspx">Home</a></li>
-                    <li><a href="Studios.aspx">Studios</a></li>
-                    <li><a href="About.aspx">About</a></li>
-                    <li><a href="Contact.aspx">Contact</a></li>
+                    <asp:PlaceHolder ID="phPublicLinks" runat="server">
+                        <li><a href="Studios.aspx">Studios</a></li>
+                        <li><a href="About.aspx">About</a></li>
+                        <li><a href="Contact.aspx">Contact</a></li>
+                    </asp:PlaceHolder>
 
+                    <!-- Guest menu -->
                     <asp:PlaceHolder ID="phGuest" runat="server">
                         <li><a href="Login.aspx">Login</a></li>
                         <li><a href="Signup.aspx">Sign Up</a></li>
                     </asp:PlaceHolder>
 
+                    <!-- Customer menu (logged-in non-admin) -->
                     <asp:PlaceHolder ID="phUser" runat="server" Visible="false">
-                        <li><a href="Account.aspx".aspx".aspx">My Account</a></li>
-                        <li><asp:LinkButton ID="btnLogout" runat="server" OnClick="btnLogout_Click">Logout</asp:LinkButton></li>
+                        <li><a href="Profile.aspx">Profile</a></li>
+                        <li><a href="Logout.aspx">Logout</a></li>
+                    </asp:PlaceHolder>
+
+                    <!-- Admin menu -->
+                    <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
+                        <li><a href="StaffRequests.aspx">Pending Requests</a></li>
+                        <li><a href="StaffSchedule.aspx">Schedule</a></li>
+                        <li><a href="Logout.aspx">Logout</a></li>
                     </asp:PlaceHolder>
                 </ul>
             </nav>
