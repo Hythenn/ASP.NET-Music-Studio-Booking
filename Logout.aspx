@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Logging out...</title>
-    <meta http-equiv="refresh" content="0;url=Home.aspx" />
 </head>
 <body>
     <form id="form1" runat="server">

