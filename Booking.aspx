@@ -30,7 +30,7 @@
 
                     <div class="form-group">
                         <label for="time">Time</label>
-                        <asp:DropDownList ID="ddlTime" runat="server" CssClass="form-control" required="required">
+                        <asp:DropDownList ID="ddlTime" runat="server" CssClass="form-control" required="required" AutoPostBack="true" MaintainScrollPositionOnPostback="true" OnSelectedIndexChanged="CalculateTotal">
                             <asp:ListItem Value="">Select time</asp:ListItem>
                             <asp:ListItem Value="9:00">9:00 AM</asp:ListItem>
                             <asp:ListItem Value="10:00">10:00 AM</asp:ListItem>
@@ -51,7 +51,7 @@
                     <div class="form-group">
                         <label>Optional Instrument Rentals</label>
                         <div class="instrument-grid">
-                            <asp:CheckBoxList ID="cblInstruments" runat="server" CssClass="form-control-checkbox" RepeatDirection="Vertical">
+                            <asp:CheckBoxList ID="cblInstruments" runat="server" CssClass="form-control-checkbox" RepeatDirection="Vertical" AutoPostBack="true" MaintainScrollPositionOnPostback="true" OnSelectedIndexChanged="CalculateTotal">
                                 <asp:ListItem Value="200">🎸 Electric Guitar (P200)</asp:ListItem>
                                 <asp:ListItem Value="200">🎸 Bass Guitar (P200)</asp:ListItem>
                                 <asp:ListItem Value="200">🥁 Drum Set (P200)</asp:ListItem>
@@ -61,6 +61,10 @@
                             </asp:CheckBoxList>
                         </div>
                     </div>
+
+                    <div class="price-summary">
+    <h3>Current Total: <asp:Label ID="lblTotalPriceDisplay" runat="server" Text="P0.00"></asp:Label></h3>
+</div>
 
                     <asp:Button ID="btnRequestBooking" runat="server" Text="Request Booking" CssClass="btn-gold" OnClick="btnRequestBooking_Click" />
                     <asp:Label ID="lblStatus" runat="server" CssClass="status-message"></asp:Label>
