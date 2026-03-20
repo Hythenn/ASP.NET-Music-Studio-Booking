@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Navigation.master.cs" Inherits="Music_Studio_Booking.Navigation" %>
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Navigation.master.cs" Inherits="Music_Studio_Booking.Navigation" %>
 
 <!DOCTYPE html>
 
@@ -14,14 +14,25 @@
 </head>
 <header>
     <nav>
-        <div class="logo">G-Studio Music Booking</div>
-        <ul class="nav-links">
+       <div class="logo">G-Studio Music Booking</div>
+
+        <!-- Regular user navigation -->
+        <ul id="UserNav" runat="server" class="nav-links">
             <li><a href="Home.aspx">Home</a></li>
             <li><a href="Studios.aspx">Studios</a></li>
             <li><a href="About.aspx">About</a></li>
             <li><a href="Contact.aspx">Contact</a></li>
+            <li><a href="Booking.aspx">Book</a></li>
             <li><a href="Login.aspx">Login</a></li>
             <li><a href="Signup.aspx">Sign Up</a></li>
+        </ul>
+
+        <!-- Simple admin navigation -->
+        <ul id="AdminNav" runat="server" class="nav-links">
+            <li><a href="StaffRequests.aspx">Requests</a></li>
+            <li><a href="StaffSchedule.aspx">Schedule</a></li>
+            <li><a href="Home.aspx">View Site</a></li>
+            <li><a href="Logout.aspx">Logout</a></li>
         </ul>
     </nav>
 </header>
