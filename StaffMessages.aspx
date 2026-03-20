@@ -14,10 +14,8 @@
                 <h2>Inbox</h2>
             </div>
 
-            <asp:Panel ID="PanelEmpty" runat="server" CssClass="empty-state" Visible="false">
-                <h3>No messages yet</h3>
-                <p>Messages from the Contact page will appear here.</p>
-            </asp:Panel>
+            <!--SHOW IF NO RESULTS FOUND FROM DATABASE -->
+            <asp:Panel ID="PanelEmpty" runat="server" CssClass="empty-state" Visible="false"></asp:Panel>
 
             <asp:Repeater ID="rptMessages" runat="server">
                 <HeaderTemplate>

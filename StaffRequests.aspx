@@ -15,10 +15,8 @@
                 <p>Latest requests appear on top. Click a card to view full details.</p>
             </div>
 
-            <asp:Panel ID="PanelEmpty" runat="server" CssClass="empty-state" Visible="false">
-                <h3>No booking requests right now</h3>
-                <p>New requests will show up here as soon as customers submit them.</p>
-            </asp:Panel>
+            <!--SHOW IF NO RESULTS FOUND FROM DATABASE -->
+            <asp:Panel ID="PanelEmpty" runat="server" CssClass="empty-state" Visible="false"></asp:Panel>
 
             <asp:Repeater ID="rptRequests" runat="server" OnItemCommand="rptRequests_ItemCommand">
                 <HeaderTemplate>
