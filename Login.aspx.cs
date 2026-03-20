@@ -76,7 +76,7 @@ namespace Music_Studio_Booking
 				}
 				else
 				{
-					Response.Redirect("Home.aspx");
+					Response.Redirect("Profile.aspx");
 				}
             }
             else
