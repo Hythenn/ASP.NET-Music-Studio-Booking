@@ -19,9 +19,7 @@ namespace Music_Studio_Booking
 		}
         protected void btnSignUp_Click(object sender, EventArgs e)
         {
-            // 2. Validate the fields (Simplified for clarity)
-            // You should have front-end validation (CompareValidator for passwords),
-            // but always validate on the back-end too.
+            
             if (string.IsNullOrWhiteSpace(signupName.Text) ||
                 string.IsNullOrWhiteSpace(signupEmail.Text) ||
                 string.IsNullOrWhiteSpace(signupPassword.Text))
@@ -38,10 +36,9 @@ namespace Music_Studio_Booking
 
             string name = signupName.Text.Trim();
             string email = signupEmail.Text.Trim();
-            string password = signupPassword.Text; // Use the raw password ONLY for hashing
+            string password = signupPassword.Text; 
 
-            // 3. SECURE HASHING: Do this BEFORE touching the database
-            // This converts "mysecret123" into a safe, random-looking string
+            
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             // 4. Connect to SQL
@@ -52,21 +49,21 @@ namespace Music_Studio_Booking
             {
                 using (SqlConnection con = new SqlConnection(connString))
                 {
-                    // Use a dynamic query using Parameters for protection
+                    
                     string query = "INSERT INTO Users (FullName, Email, PasswordHash) VALUES (@Name, @Email, @PassHash)";
                     SqlCommand cmd = new SqlCommand(query, con);
 
-                    // 5. SECURITY: Always use Parameters to prevent SQL Injection
+                    
                     cmd.Parameters.AddWithValue("@Name", name);
                     cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@PassHash", passwordHash); // Safe, hashed string
+                    cmd.Parameters.AddWithValue("@PassHash", passwordHash); 
 
                     con.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected > 0)
                     {
-                        // Success! Redirect to the Login page
+                        
                         Response.Redirect("Login.aspx?signup=success");
                     }
                     else
@@ -77,14 +74,14 @@ namespace Music_Studio_Booking
             }
             catch (SqlException ex)
             {
-                // Catch specific SQL errors, like trying to insert a duplicate Email
-                if (ex.Number == 2627 || ex.Number == 2601) // Violation of UNIQUE KEY constraint
+                
+                if (ex.Number == 2627 || ex.Number == 2601) 
                 {
                     lblErrorMessage.Text = "This email address is already in use.";
                 }
                 else
                 {
-                    // In a real app, log this error for your review
+                    
                     lblErrorMessage.Text = "A database error occurred: " + ex.Message;
                 }
             }

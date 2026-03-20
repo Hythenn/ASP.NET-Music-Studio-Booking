@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,13 +9,26 @@ namespace Music_Studio_Booking
 {
 	public partial class Navigation : System.Web.UI.MasterPage
 	{
-		protected void Page_Load(object sender, EventArgs e)
-		{
-			var isAdmin = Session["IsAdmin"] != null && Session["IsAdmin"].ToString() == "True";
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["UserID"] != null)
+            {
+                phGuest.Visible = false;
+                phUser.Visible = true;
+            }
+            else
+            {
+                phGuest.Visible = true;
+                phUser.Visible = false;
+            }
+        }
 
-			// Simple toggle: only one nav visible at a time
-			UserNav.Visible = !isAdmin;
-			AdminNav.Visible = isAdmin;
-		}
-	}
+        protected void btnLogout_Click(object sender, EventArgs e)
+        {
+            Session.Abandon();
+            Session.Clear();
+
+            Response.Redirect("Home.aspx");
+        }
+    }
 }

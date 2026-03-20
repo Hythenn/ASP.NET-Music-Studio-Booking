@@ -26,7 +26,8 @@
                         <p><strong>🔧 Features:</strong> basic soundproofing and essential equipment</p>
                         <p><strong>💰 Perfect for:</strong> affordable option for students</p>
                     </div>
-                    <a href="booking.aspx" class="btn btn-primary">Book Now</a>
+                    <asp:LinkButton ID="btnBookA" runat="server" CssClass="btn btn-primary"
+                        OnClick="btnBook_Click" CommandArgument="Studio A">Book Now</asp:LinkButton>
                 </div>
                 <div class="studio-card">
                     <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Standard Studio">
@@ -38,7 +39,8 @@
                         <p><strong>🔧 Features:</strong> improved acoustics and better recording equipment</p>
                         <p><strong>💰 Perfect for:</strong> balanced option for musicians who need more space</p>
                     </div>
-                    <a href="booking.aspx" class="btn btn-primary">Book Now</a>
+                    <asp:LinkButton ID="btnBookB" runat="server" CssClass="btn btn-primary"
+                        OnClick="btnBook_Click" CommandArgument="Studio B">Book Now</asp:LinkButton>
                 </div>
                 <div class="studio-card">
                     <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Premium Studio">
@@ -50,8 +52,8 @@
                         <p><strong>🔧 Features:</strong> advanced soundproofing and acoustic treatment</p>
                         <p><strong>💰 Perfect for:</strong> suitable for full band recordings, music production, and professional sessions</p>
                     </div>
-                    <a href="booking.aspx" class="btn btn-primary">Book Now</a>
-                    
+                    <asp:LinkButton ID="btnBookC" runat="server" CssClass="btn btn-primary"
+                        OnClick="btnBook_Click" CommandArgument="Studio C">Book Now</asp:LinkButton>
                 </div>
             </div>
 
