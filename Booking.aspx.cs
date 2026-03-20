@@ -21,16 +21,7 @@ namespace Music_Studio_Booking
             if (!IsPostBack)
             {
                 txtDate.Attributes["min"] = DateTime.Now.ToString("yyyy-MM-dd");
-
-                string roomFromUrl = Request.QueryString["room"];
-                if (!string.IsNullOrEmpty(roomFromUrl))
-                {
-                    if (ddlStudio.Items.FindByValue(roomFromUrl) != null)
-                    {
-                        ddlStudio.SelectedValue = roomFromUrl;
-                    }
-                }
-
+               
                 UpdateRunningTotal();
             }
         }

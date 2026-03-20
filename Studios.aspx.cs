@@ -24,7 +24,7 @@ namespace Music_Studio_Booking
                 LinkButton btn = (LinkButton)sender;
                 string selectedRoom = btn.CommandArgument;
 
-                Response.Redirect("Booking.aspx?room=" + Server.UrlEncode(selectedRoom));
+                Response.Redirect("Booking.aspx");
             }
         }
     }

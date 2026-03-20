@@ -15,7 +15,7 @@ namespace Music_Studio_Booking
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
-
+            ValidationSettings.UnobtrusiveValidationMode = UnobtrusiveValidationMode.None;
 		}
         protected void btnSignUp_Click(object sender, EventArgs e)
         {

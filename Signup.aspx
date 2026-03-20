@@ -20,10 +20,20 @@
                     <div class="form-group">
                         <label for="signupEmail">Email</label>
                         <asp:TextBox runat="server" type="email" ID="signupEmail"> </asp:TextBox>
+
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
                         <asp:TextBox runat="server" type="password" ID="signupPassword"> </asp:TextBox>
+                        <asp:RegularExpressionValidator
+                            ID="revPassword"
+                            runat="server"
+                            ControlToValidate="signupPassword"
+                            ValidationExpression="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                            ErrorMessage="Min 8 chars, must include letter, number, and special char."
+                            ForeColor="Red"
+                            Display="Dynamic">
+                        </asp:RegularExpressionValidator>
                     </div>
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password</label>

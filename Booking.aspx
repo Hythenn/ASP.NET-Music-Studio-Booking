@@ -73,6 +73,6 @@
             <asp:Label ID="lblStatus" runat="server" CssClass="status-message"></asp:Label>
             </form>
         </div>
-        </div>
+        
     </section>
 </asp:Content>
