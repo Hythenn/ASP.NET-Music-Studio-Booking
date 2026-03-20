@@ -96,6 +96,7 @@
     <Content Include="StaffRequests.aspx" />
     <Content Include="StaffSchedule.aspx" />
     <Content Include="Logout.aspx" />
+    <Content Include="StaffMessages.aspx" />
     <Content Include="ForgotPassword.aspx" />
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +184,13 @@
     </Compile>
     <Compile Include="Logout.aspx.designer.cs">
       <DependentUpon>Logout.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="StaffMessages.aspx.cs">
+      <DependentUpon>StaffMessages.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="StaffMessages.aspx.designer.cs">
+      <DependentUpon>StaffMessages.aspx</DependentUpon>
     </Compile>
     <Compile Include="ForgotPassword.aspx.cs">
       <DependentUpon>ForgotPassword.aspx</DependentUpon>
