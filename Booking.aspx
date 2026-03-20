@@ -17,9 +17,9 @@
                         <label for="studio">Select Studio</label>
                         <asp:DropDownList ID="ddlStudio" runat="server" CssClass="form-control" required="required">
                             <asp:ListItem Value="">Choose a studio</asp:ListItem>
-                            <asp:ListItem Value="studio-a">Studio A – Modern Recording Room</asp:ListItem>
-                            <asp:ListItem Value="studio-b">Studio B – Vocal Booth & Mixing Gear</asp:ListItem>
-                            <asp:ListItem Value="studio-c">Studio C – Large Band Room</asp:ListItem>
+                            <asp:ListItem Value="studio-a">Studio A – Modern Recording Room (P300/hour)</asp:ListItem>
+                            <asp:ListItem Value="studio-b">Studio B – Vocal Booth & Mixing Gear (P600/hour)</asp:ListItem>
+                            <asp:ListItem Value="studio-c">Studio C – Large Band Room (P900/hour)</asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
@@ -52,12 +52,12 @@
                         <label>Optional Instrument Rentals</label>
                         <div class="instrument-grid">
                             <asp:CheckBoxList ID="cblInstruments" runat="server" CssClass="form-control-checkbox" RepeatDirection="Vertical">
-                                <asp:ListItem Value="Electric Guitar">🎸 Electric Guitar</asp:ListItem>
-                                <asp:ListItem Value="Bass Guitar">🎸 Bass Guitar</asp:ListItem>
-                                <asp:ListItem Value="Drum Set">🥁 Drum Set</asp:ListItem>
-                                <asp:ListItem Value="Keyboard">🎹 Keyboard / MIDI Keyboard</asp:ListItem>
-                                <asp:ListItem Value="Studio Microphones">🎤 Studio Microphones</asp:ListItem>
-                                <asp:ListItem Value="Guitar Amplifiers">🔊 Guitar Amplifiers</asp:ListItem>
+                                <asp:ListItem Value="200">🎸 Electric Guitar (P200)</asp:ListItem>
+                                <asp:ListItem Value="200">🎸 Bass Guitar (P200)</asp:ListItem>
+                                <asp:ListItem Value="200">🥁 Drum Set (P200)</asp:ListItem>
+                                <asp:ListItem Value="150">🎹 Keyboard / MIDI Keyboard (P150)</asp:ListItem>
+                                <asp:ListItem Value="0">🎤 Studio Microphones (Free)</asp:ListItem>
+                                <asp:ListItem Value="0">🔊 Guitar Amplifiers (Free)</asp:ListItem>
                             </asp:CheckBoxList>
                         </div>
                     </div>
