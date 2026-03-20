@@ -14,7 +14,7 @@
                 <h2>Join Music Studio Booking</h2>
                 <form id="signupForm">
                     <div class="form-group">
-                        <label for="signupName">Name</label>
+                        <label for="signupName">Full Name</label>
                         <asp:TextBox runat="server" type="text" ID="signupName"> </asp:TextBox>
                     </div>
                     <div class="form-group">
