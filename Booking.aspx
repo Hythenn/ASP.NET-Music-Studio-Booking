@@ -33,7 +33,33 @@
                         <asp:DropDownList ID="ddlTime" runat="server" CssClass="form-control" required="required">
                             <asp:ListItem Value="">Select time</asp:ListItem>
                             <asp:ListItem Value="9:00">9:00 AM</asp:ListItem>
+                            <asp:ListItem Value="10:00">10:00 AM</asp:ListItem>
+                            <asp:ListItem Value="11:00">11:00 AM</asp:ListItem>
+                            <asp:ListItem Value="12:00">12:00 PM</asp:ListItem>
+                            <asp:ListItem Value="13:00">1:00 PM</asp:ListItem>
+                            <asp:ListItem Value="14:00">2:00 PM</asp:ListItem>
+                            <asp:ListItem Value="15:00">3:00 PM</asp:ListItem>
+                            <asp:ListItem Value="16:00">4:00 PM</asp:ListItem>
+                            <asp:ListItem Value="17:00">5:00 PM</asp:ListItem>
+                            <asp:ListItem Value="18:00">6:00 PM</asp:ListItem>
+                            <asp:ListItem Value="19:00">7:00 PM</asp:ListItem>
+                            <asp:ListItem Value="20:00">8:00 PM</asp:ListItem>
+                            <asp:ListItem Value="21:00">9:00 PM</asp:ListItem>
                         </asp:DropDownList>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Optional Instrument Rentals</label>
+                        <div class="instrument-grid">
+                            <asp:CheckBoxList ID="cblInstruments" runat="server" CssClass="form-control-checkbox" RepeatDirection="Vertical">
+                                <asp:ListItem Value="Electric Guitar">🎸 Electric Guitar</asp:ListItem>
+                                <asp:ListItem Value="Bass Guitar">🎸 Bass Guitar</asp:ListItem>
+                                <asp:ListItem Value="Drum Set">🥁 Drum Set</asp:ListItem>
+                                <asp:ListItem Value="Keyboard">🎹 Keyboard / MIDI Keyboard</asp:ListItem>
+                                <asp:ListItem Value="Studio Microphones">🎤 Studio Microphones</asp:ListItem>
+                                <asp:ListItem Value="Guitar Amplifiers">🔊 Guitar Amplifiers</asp:ListItem>
+                            </asp:CheckBoxList>
+                        </div>
                     </div>
 
                     <asp:Button ID="btnRequestBooking" runat="server" Text="Request Booking" CssClass="btn-gold" OnClick="btnRequestBooking_Click" />
