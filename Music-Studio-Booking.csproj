@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -92,6 +92,9 @@
     <Content Include="Login.aspx" />
     <Content Include="Signup.aspx" />
     <Content Include="Booking.aspx" />
+    <Content Include="StaffRequests.aspx" />
+    <Content Include="StaffSchedule.aspx" />
+    <Content Include="Logout.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Navigation.Master.cs">
@@ -150,6 +153,27 @@
     </Compile>
     <Compile Include="Booking.aspx.designer.cs">
       <DependentUpon>Booking.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="StaffRequests.aspx.cs">
+      <DependentUpon>StaffRequests.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="StaffRequests.aspx.designer.cs">
+      <DependentUpon>StaffRequests.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="StaffSchedule.aspx.cs">
+      <DependentUpon>StaffSchedule.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="StaffSchedule.aspx.designer.cs">
+      <DependentUpon>StaffSchedule.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Logout.aspx.designer.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

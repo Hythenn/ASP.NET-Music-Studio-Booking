@@ -24,7 +24,7 @@
                     <div class="requests-list">
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <div class="request-card <%# Eval(\"StatusCss\") %>">
+                    <div class="request-card <%# Eval("StatusCss") %>">
                         <div class="request-main" onclick="this.parentElement.classList.toggle('expanded');">
                             <div class="request-meta">
                                 <span class="request-time"><%# Eval("RequestedAtDisplay") %></span>
