@@ -49,17 +49,17 @@
         <h2>Featured Studios</h2>
         <div class="studios-grid">
             <div class="studio-card">
-                <img src="https://via.placeholder.com/300x200?text=Studio+A" alt="Studio A">
+                <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Studio A">
                 <h3>Studio A – Modern Recording Room</h3>
                 <p>Equipped with the latest recording technology for high-quality audio production.</p>
             </div>
             <div class="studio-card">
-                <img src="https://via.placeholder.com/300x200?text=Studio+B" alt="Studio B">
+                <img src="https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/171173581/original/a545270399524c146beb455b93dcf348b57e2728/acoustic-treatment-your-space.png" alt="Studio B">
                 <h3>Studio B – Vocal Booth & Mixing Gear</h3>
                 <p>Perfect for vocal recordings and mixing sessions with professional gear.</p>
             </div>
             <div class="studio-card">
-                <img src="https://via.placeholder.com/300x200?text=Studio+C" alt="Studio C">
+                <img src="https://i.pinimg.com/736x/a6/d5/bd/a6d5bd2f059c9bc3cecae82168c63cdb.jpg" alt="Studio C">
                 <h3>Studio C – Large Band Room</h3>
                 <p>Spacious room ideal for band recordings and live sessions.</p>
             </div>

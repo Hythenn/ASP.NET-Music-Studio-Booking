@@ -30,7 +30,7 @@
                         OnClick="btnBook_Click" CommandArgument="Studio A">Book Now</asp:LinkButton>
                 </div>
                 <div class="studio-card">
-                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Standard Studio">
+                    <img src="https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/171173581/original/a545270399524c146beb455b93dcf348b57e2728/acoustic-treatment-your-space.png" alt="Standard Studio">
                     <div class="studio-category">Standard Studio</div>
                     <h3>Studio B – Band Rehearsal Room</h3>
                     <div class="studio-details">
@@ -43,7 +43,7 @@
                         OnClick="btnBook_Click" CommandArgument="Studio B">Book Now</asp:LinkButton>
                 </div>
                 <div class="studio-card">
-                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Premium Studio">
+                    <img src="https://i.pinimg.com/736x/a6/d5/bd/a6d5bd2f059c9bc3cecae82168c63cdb.jpg" alt="Premium Studio">
                     <div class="studio-category">Premium Studio</div>
                     <h3>Studio C – Professional Recording Suite</h3>
                     <div class="studio-details">

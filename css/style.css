@@ -391,7 +391,45 @@ nav {
         margin-bottom: 1rem;
         color: #ffd700;
     }
+/* Container for the time slots */
+.time-grid table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 10px; /* Space between buttons */
+}
 
+/* Style each individual checkbox item */
+.time-grid input[type="checkbox"] {
+    display: none; /* Hide the ugly default box */
+}
+
+.time-grid label {
+    display: block;
+    background: #333;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+    border-radius: 5px;
+    border: 1px solid #555;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+    /* Hover effect */
+    .time-grid label:hover {
+        background: #444;
+        border-color: #ffc107; /* Gold border */
+    }
+
+/* Style for when the checkbox is SELECTED */
+.time-grid input[type="checkbox"]:checked + label {
+    background: #ffc107; /* Gold background */
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
 /* Page Hero for other pages */
 .page-hero {
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%), url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
