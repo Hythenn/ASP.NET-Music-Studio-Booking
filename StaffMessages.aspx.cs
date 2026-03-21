@@ -72,11 +72,18 @@ namespace Music_Studio_Booking
 
             public string SubmittedAtDisplay => SubmittedAt.ToString("MMM dd, yyyy • hh:mm tt");
 
-            // Short preview for the collapsed card header
-            public string Preview =>
-                UserMessage != null && UserMessage.Length > 80
-                    ? UserMessage.Substring(0, 80) + "..."
-                    : UserMessage;
+            //==========TRUNCATE MESSAGE TO 80 CHARS FOR CARD PREVIEW
+            public string Preview
+            {
+                get
+                {
+                    if (UserMessage != null && UserMessage.Length > 80)
+                        return UserMessage.Substring(0, 80) + "...";
+                    return UserMessage;
+                }
+            }
         }
     }
 }
+
+

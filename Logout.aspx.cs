@@ -6,11 +6,13 @@ namespace Music_Studio_Booking
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			// Abandon first, then clear remaining session state.
+			//==========ABANDON SESSION THEN CLEAR REMAINING STATE AND REDIRECT HOME
 			Session.Abandon();
 			Session.Clear();
 			Response.Redirect("Home.aspx");
 		}
 	}
 }
+
+
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -36,7 +36,7 @@ namespace Music_Studio_Booking
                     lblStatus.Text = "Message sent successfully! We'll get back to you soon.";
                     lblStatus.ForeColor = System.Drawing.Color.Green;
 
-                    // Clear the form
+                        //==========CLEAR FORM FIELDS AFTER SUCCESSFUL SUBMIT
                     txtName.Text = "";
                     txtEmail.Text = "";
                     txtMessage.Text = "";
@@ -50,3 +50,4 @@ namespace Music_Studio_Booking
         }
     }
 }
+

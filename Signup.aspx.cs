@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -19,7 +19,7 @@ namespace Music_Studio_Booking
 		}
         protected void btnSignUp_Click(object sender, EventArgs e)
         {
-            // 1. Validation First
+            //==========VALIDATE ALL REQUIRED FIELDS ARE FILLED AND PASSWORDS MATCH
             if (string.IsNullOrWhiteSpace(signupName.Text) ||
                 string.IsNullOrWhiteSpace(signupEmail.Text) ||
                 string.IsNullOrWhiteSpace(signupPassword.Text) ||
@@ -35,41 +35,45 @@ namespace Music_Studio_Booking
                 return;
             }
 
-            // 2. Prepare Data
+            //==========PREPARE AND NORMALIZE USER INPUT DATA
             string name = signupName.Text.Trim();
             string email = signupEmail.Text.Trim();
             string password = signupPassword.Text;
             string securityQuestion = ddlSecurityQuestion.SelectedValue;
             string securityAnswer = signupAnswer.Text.Trim().ToLower();
 
-            // 3. Hashing (Using BCrypt)
+            //==========HASH PASSWORD AND SECURITY ANSWER WITH BCRYPT
+            //hindi iniimbak yung actual password — ginagawa itong hash ng BCrypt para secure
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
             string answerHash = BCrypt.Net.BCrypt.HashPassword(securityAnswer);
 
-            // 4. Database Operation
+            //==========INSERT NEW USER INTO DATABASE
+            //kinukuha yung connection string sa Web.config — doon nakalagay yung database address
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
 
             try
             {
                 using (SqlConnection con = new SqlConnection(connString))
                 {
-                    // Define the query
+                    //==========DEFINE INSERT QUERY FOR NEW USER
                     string query = "INSERT INTO Users (FullName, Email, PasswordHash, SecurityQuestion, SecurityAnswerHash) " +
                                    "VALUES (@Name, @Email, @PassHash, @Question, @AnswerHash)";
 
-                    // NOW create the cmd object
+                    //==========CREATE SQL COMMAND WITH QUERY
                     SqlCommand cmd = new SqlCommand(query, con);
 
-                    // Add all parameters
+                    //==========BIND ALL PARAMETERS TO COMMAND
                     cmd.Parameters.AddWithValue("@Name", name);
                     cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@PassHash", passwordHash);
                     cmd.Parameters.AddWithValue("@Question", securityQuestion);
                     cmd.Parameters.AddWithValue("@AnswerHash", answerHash);
 
+                    //binubuksan na yung connection at isinasave yung bagong user
                     con.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
 
+                    //kung matagumpay ang pag-insert, ire-redirect sa login page
                     if (rowsAffected > 0)
                     {
                         Response.Redirect("Login.aspx?signup=success");
@@ -82,7 +86,7 @@ namespace Music_Studio_Booking
             }
             catch (SqlException ex)
             {
-                // 2627 and 2601 are SQL codes for "Duplicate Entry" (Email already exists)
+                //==========SQL ERROR 2627/2601 = DUPLICATE EMAIL ENTRY
                 if (ex.Number == 2627 || ex.Number == 2601)
                 {
                     lblErrorMessage.Text = "This email address is already in use.";
@@ -99,3 +103,4 @@ namespace Music_Studio_Booking
         }
     }
 }
+

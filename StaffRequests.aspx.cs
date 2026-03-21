@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
 
 namespace Music_Studio_Booking
 {
@@ -10,6 +9,7 @@ namespace Music_Studio_Booking
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            //tinitingnan kung ang naka-login ba ay admin — kinukuha sa Session
             var isAdmin = Session["IsAdmin"] != null && Session["IsAdmin"].ToString() == "True";
             if (!isAdmin)
             {
@@ -17,6 +17,7 @@ namespace Music_Studio_Booking
                 return;
             }
 
+            //kung first load ng page (hindi galing sa button click), i-load ang data
             if (!IsPostBack)
             {
                 LoadRequests();
@@ -25,14 +26,23 @@ namespace Music_Studio_Booking
 
         protected void rptRequests_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
-            if (!int.TryParse(e.CommandArgument.ToString(), out int bookingId))
+            int bookingId;
+            if (!int.TryParse(e.CommandArgument.ToString(), out bookingId))
                 return;
 
-            string newStatus = e.CommandName == "Accept" ? "Accepted"
-                             : e.CommandName == "Decline" ? "Declined"
-                             : null;
-
-            if (newStatus == null) return;
+            string newStatus = "";
+            if (e.CommandName == "Accept")
+            {
+                newStatus = "Accepted";
+            }
+            else if (e.CommandName == "Decline")
+            {
+                newStatus = "Declined";
+            }
+            else
+            {
+                return;
+            }
 
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
             using (SqlConnection con = new SqlConnection(connString))
@@ -62,22 +72,21 @@ namespace Music_Studio_Booking
                                ORDER BY CreatedAt DESC";
 
                 SqlCommand cmd = new SqlCommand(sql, con);
+                //binabasa ang bawat row ng resulta ng query gamit ang reader
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var vm = new BookingViewModel
-                    {
-                        Id                  = reader.GetInt32(reader.GetOrdinal("BookingID")),
-                        CustomerEmail       = reader["UserEmail"].ToString(),
-                        CustomerName        = reader["UserEmail"].ToString(),   // no separate name column; use email
-                        StudioRoom          = reader["StudioRoom"].ToString(),
-                        BookingDate         = Convert.ToDateTime(reader["BookingDate"]),
-                        BookingTime         = reader["BookingTime"].ToString(),
-                        CreatedAt           = Convert.ToDateTime(reader["CreatedAt"]),
-                        SelectedInstruments = reader["SelectedInstruments"].ToString(),
-                        TotalPrice          = Convert.ToDecimal(reader["TotalPrice"]),
-                        Status              = reader["Status"].ToString()
-                    };
+                    BookingViewModel vm = new BookingViewModel();
+                    vm.Id                  = reader.GetInt32(reader.GetOrdinal("BookingID"));
+                    vm.CustomerEmail       = reader["UserEmail"].ToString();
+                    vm.CustomerName        = reader["UserEmail"].ToString(); //==========NO SEPARATE NAME COLUMN, USE EMAIL
+                    vm.StudioRoom          = reader["StudioRoom"].ToString();
+                    vm.BookingDate         = Convert.ToDateTime(reader["BookingDate"]);
+                    vm.BookingTime         = reader["BookingTime"].ToString();
+                    vm.CreatedAt           = Convert.ToDateTime(reader["CreatedAt"]);
+                    vm.SelectedInstruments = reader["SelectedInstruments"].ToString();
+                    vm.TotalPrice          = Convert.ToDecimal(reader["TotalPrice"]);
+                    vm.Status              = reader["Status"].ToString();
                     data.Add(vm);
                 }
             }
@@ -95,14 +104,16 @@ namespace Music_Studio_Booking
             foreach (var item in data)
                 item.StatusCss = GetStatusCss(item.Status);
 
+            //ikinukuha sa repeater yung list ng bookings para ma-display sa page
             rptRequests.DataSource = data;
             rptRequests.DataBind();
         }
 
+        //==========RETURN CSS CLASS NAME BASED ON BOOKING STATUS
         private static string GetStatusCss(string status)
         {
-            if (string.Equals(status, "Accepted", StringComparison.OrdinalIgnoreCase)) return "request-accepted";
-            if (string.Equals(status, "Declined", StringComparison.OrdinalIgnoreCase)) return "request-declined";
+            if (status == "Accepted") return "request-accepted";
+            if (status == "Declined") return "request-declined";
             return "request-pending";
         }
 
@@ -121,21 +132,33 @@ namespace Music_Studio_Booking
             public string   Status              { get; set; }
             public string   StatusCss           { get; set; }
 
-            public string DateDisplay        => BookingDate.ToString("MMM dd, yyyy");
-            public string CreatedAtDisplay   => CreatedAt.ToString("MMM dd, yyyy • hh:mm tt");
-            public string StudioName         => FriendlyStudio(StudioRoom);
-            public string TotalPriceDisplay  => "P" + TotalPrice.ToString("N2");
+            public string DateDisplay
+            {
+                get { return BookingDate.ToString("MMM dd, yyyy"); }
+            }
+            public string CreatedAtDisplay
+            {
+                get { return CreatedAt.ToString("MMM dd, yyyy • hh:mm tt"); }
+            }
+            public string StudioName
+            {
+                get { return FriendlyStudio(StudioRoom); }
+            }
+            public string TotalPriceDisplay
+            {
+                get { return "P" + TotalPrice.ToString("N2"); }
+            }
 
+            //==========CONVERT STUDIO KEY TO DISPLAY NAME
             private static string FriendlyStudio(string room)
             {
-                switch (room)
-                {
-                    case "studio-a": return "Studio A – Modern Recording Room";
-                    case "studio-b": return "Studio B – Vocal Booth & Mixing Gear";
-                    case "studio-c": return "Studio C – Large Band Room";
-                    default: return room;
-                }
+                if (room == "studio-a") return "Studio A – Modern Recording Room";
+                if (room == "studio-b") return "Studio B – Vocal Booth & Mixing Gear";
+                if (room == "studio-c") return "Studio C – Large Band Room";
+                return room;
             }
         }
     }
 }
+
+

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
 
 namespace Music_Studio_Booking
 {
@@ -41,15 +40,14 @@ namespace Music_Studio_Booking
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    accepted.Add(new ScheduleBookingViewModel
-                    {
-                        BookingDate         = Convert.ToDateTime(reader["BookingDate"]),
-                        CustomerName        = reader["UserEmail"].ToString(),
-                        StudioName          = FriendlyStudio(reader["StudioRoom"].ToString()),
-                        BookingTime         = reader["BookingTime"].ToString(),
-                        SelectedInstruments = reader["SelectedInstruments"].ToString(),
-                        TotalPrice          = Convert.ToDecimal(reader["TotalPrice"])
-                    });
+                    ScheduleBookingViewModel b = new ScheduleBookingViewModel();
+                    b.BookingDate         = Convert.ToDateTime(reader["BookingDate"]);
+                    b.CustomerName        = reader["UserEmail"].ToString();
+                    b.StudioName          = FriendlyStudio(reader["StudioRoom"].ToString());
+                    b.BookingTime         = reader["BookingTime"].ToString();
+                    b.SelectedInstruments = reader["SelectedInstruments"].ToString();
+                    b.TotalPrice          = Convert.ToDecimal(reader["TotalPrice"]);
+                    accepted.Add(b);
                 }
             }
 
@@ -63,15 +61,30 @@ namespace Music_Studio_Booking
             PanelEmptySchedule.Visible = false;
             rptSchedule.Visible = true;
 
-            var grouped = accepted
-                .GroupBy(b => b.BookingDate.Date)
-                .OrderBy(g => g.Key)
-                .Select(g => new ScheduleDayViewModel
+            //==========GROUP ACCEPTED BOOKINGS BY DATE USING SIMPLE FOREACH
+            var grouped = new List<ScheduleDayViewModel>();
+            foreach (var b in accepted)
+            {
+                ScheduleDayViewModel existing = null;
+                foreach (var day in grouped)
                 {
-                    Date     = g.Key,
-                    Bookings = g.ToList()
-                })
-                .ToList();
+                    if (day.Date == b.BookingDate.Date)
+                    {
+                        existing = day;
+                        break;
+                    }
+                }
+
+                if (existing == null)
+                {
+                    existing = new ScheduleDayViewModel();
+                    existing.Date = b.BookingDate.Date;
+                    existing.Bookings = new List<ScheduleBookingViewModel>();
+                    grouped.Add(existing);
+                }
+
+                existing.Bookings.Add(b);
+            }
 
             rptSchedule.DataSource = grouped;
             rptSchedule.DataBind();
@@ -93,15 +106,13 @@ namespace Music_Studio_Booking
             inner.DataBind();
         }
 
+        //==========CONVERT STUDIO KEY TO DISPLAY NAME
         private static string FriendlyStudio(string room)
         {
-            switch (room)
-            {
-                case "studio-a": return "Studio A – Modern Recording Room";
-                case "studio-b": return "Studio B – Vocal Booth & Mixing Gear";
-                case "studio-c": return "Studio C – Large Band Room";
-                default: return room;
-            }
+            if (room == "studio-a") return "Studio A – Modern Recording Room";
+            if (room == "studio-b") return "Studio B – Vocal Booth & Mixing Gear";
+            if (room == "studio-c") return "Studio C – Large Band Room";
+            return room;
         }
 
         private class ScheduleDayViewModel
@@ -109,13 +120,21 @@ namespace Music_Studio_Booking
             public DateTime Date { get; set; }
             public List<ScheduleBookingViewModel> Bookings { get; set; }
 
-            public string DateDisplay => Date.ToString("MMM dd, yyyy (dddd)");
+            public string DateDisplay
+            {
+                get { return Date.ToString("MMM dd, yyyy (dddd)"); }
+            }
             public string CountLabel
             {
                 get
                 {
-                    int count = Bookings != null ? Bookings.Count : 0;
-                    return count == 1 ? "1 booking" : count + " bookings";
+                    int count = 0;
+                    if (Bookings != null)
+                        count = Bookings.Count;
+
+                    if (count == 1)
+                        return "1 booking";
+                    return count + " bookings";
                 }
             }
         }
@@ -129,8 +148,16 @@ namespace Music_Studio_Booking
             public string   SelectedInstruments { get; set; }
             public decimal  TotalPrice          { get; set; }
 
-            public string TimeRange          => BookingTime;
-            public string TotalPriceDisplay  => "P" + TotalPrice.ToString("N2");
+            public string TimeRange
+            {
+                get { return BookingTime; }
+            }
+            public string TotalPriceDisplay
+            {
+                get { return "P" + TotalPrice.ToString("N2"); }
+            }
         }
     }
 }
+
+
