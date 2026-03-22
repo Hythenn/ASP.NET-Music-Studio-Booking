@@ -44,12 +44,12 @@ namespace Music_Studio_Booking
             string securityAnswer = signupAnswer.Text.Trim().ToLower();
 
             //==========HASH PASSWORD AND SECURITY ANSWER WITH BCRYPT
-            //hindi iniimbak yung actual password — ginagawa itong hash ng BCrypt para secure
+            //not storing the actual password — doing a BCrypt hash para secure
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
             string answerHash = BCrypt.Net.BCrypt.HashPassword(securityAnswer);
 
             //==========INSERT NEW USER INTO DATABASE
-            //kinukuha yung connection string sa Web.config — doon nakalagay yung database address
+            //getting the connection string sa Web.config — that's where the DB address is
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
 
             try
@@ -70,11 +70,11 @@ namespace Music_Studio_Booking
                     cmd.Parameters.AddWithValue("@Question", securityQuestion);
                     cmd.Parameters.AddWithValue("@AnswerHash", answerHash);
 
-                    //binubuksan na yung connection at isinasave yung bagong user
+                    //opening the connection and saving yung bagong user
                     con.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
 
-                    //kung matagumpay ang pag-insert, ire-redirect sa login page
+                    //if the insert is successful, ire-redirect to the login page
                     if (rowsAffected > 0)
                     {
                         Response.Redirect("Login.aspx?signup=success");
