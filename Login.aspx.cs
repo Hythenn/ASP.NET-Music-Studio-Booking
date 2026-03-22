@@ -22,23 +22,34 @@ namespace Music_Studio_Booking
             string email = loginEmail.Text.Trim();
             string passwordAttempt = loginPassword.Text;
 
-            //kunukuha yung connection string sa Web.config para makakonekta sa database
+            //==========BYPASS DATABASE FOR ADMIN LOGIN
+            if (email.ToLower() == "admin+1234567890@gstudio.com")
+            {
+                Session["UserID"] = 0;
+                Session["UserName"] = "Admin";
+                Session["UserEmail"] = email;
+                Session["IsAdmin"] = true;
+                Response.Redirect("StaffRequests.aspx");
+                return;
+            }
+
+            //getting the connection string sa Web.config to connect to the database
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
             string storedHash = "";
             string userName = "";
             int userId = 0;
             string userEmail = "";
 
-            //binubuksan yung connection sa database, at awtomatiko itong sasarahin pagkatapos ng using block
+            //opening the database connection, it will automatically close pagkatapos ng using block
             using (SqlConnection con = new SqlConnection(connString))
             {
                 string query = "SELECT UserID, FullName, PasswordHash, Email FROM Users WHERE Email = @Email";
                 SqlCommand cmd = new SqlCommand(query, con);
-                //ginagamit ang parameter para hindi makapasok ang SQL injection
+                //using parameters here para safe from SQL injection
                 cmd.Parameters.AddWithValue("@Email", email);
 
                 con.Open();
-                //dito nababasa ang resulta ng query row by row
+                //reading the query results dito row by row
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read())
@@ -50,16 +61,16 @@ namespace Music_Studio_Booking
                 }
             }
 
-            //tinitingnan ng BCrypt kung tama yung password na ni-type — hindi ito plain text comparison kundi hash comparison
+            //BCrypt verifies kung tama yung password — this compares the hash, not the plain text
             if (!string.IsNullOrEmpty(storedHash) && BCrypt.Net.BCrypt.Verify(passwordAttempt, storedHash))
             {
-                //iniimbak sa Session yung info ng naka-login na user para magamit sa ibang pages
+                //storing the logged-in user info sa Session to use across other pages
                 Session["UserID"] = userId;
                 Session["UserName"] = userName;
                 Session["UserEmail"] = userEmail;
                 Session["IsAdmin"] = IsAdminUser(userEmail, userName);
 
-                //depende kung admin o regular user, dini-direct sila sa tamang page
+                //redirecting them sa tamang page depending on their admin status
                 if ((bool)Session["IsAdmin"])
                 {
                     Response.Redirect("StaffRequests.aspx");

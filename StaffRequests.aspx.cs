@@ -9,7 +9,7 @@ namespace Music_Studio_Booking
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            //tinitingnan kung ang naka-login ba ay admin — kinukuha sa Session
+            //checking kung admin ba ang naka-login — based sa Session
             var isAdmin = Session["IsAdmin"] != null && Session["IsAdmin"].ToString() == "True";
             if (!isAdmin)
             {
@@ -17,7 +17,7 @@ namespace Music_Studio_Booking
                 return;
             }
 
-            //kung first load ng page (hindi galing sa button click), i-load ang data
+            //if it's the first page load, i-load na the data
             if (!IsPostBack)
             {
                 LoadRequests();
@@ -72,7 +72,7 @@ namespace Music_Studio_Booking
                                ORDER BY CreatedAt DESC";
 
                 SqlCommand cmd = new SqlCommand(sql, con);
-                //binabasa ang bawat row ng resulta ng query gamit ang reader
+                //reading each row from the query results gamit ang reader
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -104,7 +104,7 @@ namespace Music_Studio_Booking
             foreach (var item in data)
                 item.StatusCss = GetStatusCss(item.Status);
 
-            //ikinukuha sa repeater yung list ng bookings para ma-display sa page
+            //binding the list of bookings sa repeater so they display on the page
             rptRequests.DataSource = data;
             rptRequests.DataBind();
         }

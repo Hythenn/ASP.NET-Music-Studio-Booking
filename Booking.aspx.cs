@@ -13,13 +13,13 @@ namespace Music_Studio_Booking
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            //kung wala pang naka-login, ipinapadala agad sa login page
+            //if no one is logged in, redirecting agad sa login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
             }
 
-            //ang IsPostBack ay naging true kapag ni-click ng user ang isang button — first load lang tayo gumagalaw dito
+            //IsPostBack is true if the user clicks a button — so first load lang tayo papasok dito
             if (!IsPostBack)
             {
                 txtDate.Attributes["min"] = DateTime.Now.ToString("yyyy-MM-dd");
@@ -72,7 +72,7 @@ namespace Music_Studio_Booking
 
         protected void btnRequestBooking_Click(object sender, EventArgs e)
         {
-            //kinukuha yung email ng naka-login mula sa Session
+            //getting the logged-in user's email mula sa Session
             string email = Session["UserEmail"]?.ToString();
             string room = ddlStudio.SelectedValue;
             string dateInput = txtDate.Text;
@@ -118,7 +118,7 @@ namespace Music_Studio_Booking
             string instrumentsString = string.Join(", ", selectedInstruments);
 
             //==========OPEN DB CONNECTION AND PROCESS BOOKING
-            //kukuha ng connection string sa Web.config para makakonekta sa database
+            //getting the connection string sa Web.config to connect to the database
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
             using (SqlConnection con = new SqlConnection(connString))
             {
@@ -129,7 +129,7 @@ namespace Music_Studio_Booking
                 {
                     string checkQuery = "SELECT COUNT(*) FROM Bookings WHERE StudioRoom = @Room AND BookingDate = @Date AND BookingTime LIKE '%' + @Slot + '%'";
                     SqlCommand checkCmd = new SqlCommand(checkQuery, con);
-                    //ginagamit ang parameters para safe — hindi makapasok ang malicious SQL
+                    //using parameters here para safe from malicious SQL
                     checkCmd.Parameters.AddWithValue("@Room", room);
                     checkCmd.Parameters.AddWithValue("@Date", dateInput);
                     checkCmd.Parameters.AddWithValue("@Slot", timeSlot);
@@ -153,7 +153,7 @@ namespace Music_Studio_Booking
                 cmd.Parameters.AddWithValue("@Instruments", instrumentsString);
                 cmd.Parameters.AddWithValue("@Price", totalPrice);
 
-                //isinasave na sa database yung booking — ExecuteNonQuery kasi walang data na ibabalik
+                //saving the booking sa database — using ExecuteNonQuery kasi no data is returned
                 cmd.ExecuteNonQuery();
 
                 lblStatus.Text = $"Booking Successful for {selectedTimes.Count} hours! Total: P{totalPrice}";

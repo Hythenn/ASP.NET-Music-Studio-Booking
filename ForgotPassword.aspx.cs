@@ -21,7 +21,7 @@ namespace Music_Studio_Booking
                 return;
             }
 
-            //kinukuha yung connection sa database mula sa Web.config
+            //getting the connection string sa Web.config to connect to the database
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
 
             using (SqlConnection con = new SqlConnection(connString))
@@ -34,7 +34,7 @@ namespace Music_Studio_Booking
                 try
                 {
                     con.Open();
-                    //ginagamit ang ExecuteScalar kasi isang value lang ang kukunin mula sa database
+                    //using ExecuteScalar kasi we only need one value from the database
                     object result = cmd.ExecuteScalar();
 
                     if (result != null)
@@ -42,11 +42,11 @@ namespace Music_Studio_Booking
                         string storedAnswerHash = result.ToString();
 
                         //==========VERIFY SECURITY ANSWER WITH BCRYPT
-                        //tinitingnan ng BCrypt kung tama yung sagot — kumpara sa hash na nakalagay sa database
+                        //BCrypt verifies kung tama yung answer — comparing against the stored hash
                         if (BCrypt.Net.BCrypt.Verify(providedAnswer, storedAnswerHash))
                         {
                             //==========ANSWER VERIFIED - HASH THE NEW PASSWORD
-                            //ginagawang hash muna yung bagong password bago i-save sa database
+                            //hashing the new password muna bago i-save to the database
                             string newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
                             //==========UPDATE DB WITH NEW PASSWORD HASH
@@ -55,7 +55,7 @@ namespace Music_Studio_Booking
                             updateCmd.Parameters.AddWithValue("@NewHash", newPasswordHash);
                             updateCmd.Parameters.AddWithValue("@Email", email);
 
-                            //ini-update na yung password sa database — ExecuteNonQuery kasi walang data na ibabalik
+                            //updating the password sa database — using ExecuteNonQuery kasi no data is returned
                             updateCmd.ExecuteNonQuery();
 
                             lblResetStatus.Text = "Password updated! You can now login.";
