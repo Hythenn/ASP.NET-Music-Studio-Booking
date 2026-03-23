@@ -23,7 +23,7 @@ namespace Music_Studio_Booking
             if (!IsPostBack)
             {
                 txtDate.Attributes["min"] = DateTime.Now.ToString("yyyy-MM-dd");
-               
+
                 UpdateRunningTotal();
             }
         }
@@ -72,14 +72,15 @@ namespace Music_Studio_Booking
 
         protected void btnRequestBooking_Click(object sender, EventArgs e)
         {
-            //getting the logged-in user's email mula sa Session
+            string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
+            // 1. Basic Session and Input Retrieval
             string email = Session["UserEmail"]?.ToString();
             string room = ddlStudio.SelectedValue;
             string dateInput = txtDate.Text;
 
             if (string.IsNullOrEmpty(email)) { Response.Redirect("Login.aspx"); return; }
 
-            //==========VALIDATE SELECTED DATE IS NOT IN THE PAST
+            // 2. Date Validation
             DateTime selectedDate;
             if (DateTime.TryParse(dateInput, out selectedDate))
             {
@@ -91,7 +92,7 @@ namespace Music_Studio_Booking
                 }
             }
 
-            //==========COLLECT ALL SELECTED TIME SLOTS FROM CHECKBOX LIST
+            // 3. Collect Selected Time Slots
             List<string> selectedTimes = new List<string>();
             foreach (ListItem item in cblTime.Items)
             {
@@ -105,9 +106,8 @@ namespace Music_Studio_Booking
                 return;
             }
 
+            // 4. Calculate Final Data for Insertion
             string timesFormatted = string.Join(", ", selectedTimes);
-
-            //==========COMPUTE TOTAL PRICE AND COLLECT SELECTED INSTRUMENTS
             decimal totalPrice = UpdateRunningTotal();
 
             List<string> selectedInstruments = new List<string>();
@@ -117,33 +117,49 @@ namespace Music_Studio_Booking
             }
             string instrumentsString = string.Join(", ", selectedInstruments);
 
-            //==========OPEN DB CONNECTION AND PROCESS BOOKING
-            //getting the connection string sa Web.config to connect to the database
-            string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
+            // 5. Database Logic: Capacity Check & Insertion
             using (SqlConnection con = new SqlConnection(connString))
             {
                 con.Open();
 
-                //==========CHECK EACH TIME SLOT FOR CONFLICTS IN SAME ROOM AND DATE
+                // A. GET MAX CAPACITY for the chosen studio room
+                int maxRooms = 1; // Default fallback if studio is not found
+                string capQuery = "SELECT TotalRooms FROM Studios WHERE StudioID = @Room";
+                SqlCommand capCmd = new SqlCommand(capQuery, con);
+                capCmd.Parameters.AddWithValue("@Room", room);
+
+                object capResult = capCmd.ExecuteScalar();
+                if (capResult != null) maxRooms = Convert.ToInt32(capResult);
+
+                // B. CHECK AVAILABILITY for each selected slot
                 foreach (string timeSlot in selectedTimes)
                 {
-                    string checkQuery = "SELECT COUNT(*) FROM Bookings WHERE StudioRoom = @Room AND BookingDate = @Date AND BookingTime LIKE '%' + @Slot + '%'";
+                    // Count how many confirmed/active bookings exist for this specific slot
+                    string checkQuery = @"SELECT COUNT(*) FROM Bookings 
+                                  WHERE StudioRoom = @Room 
+                                  AND BookingDate = @Date 
+                                  AND BookingTime LIKE '%' + @Slot + '%'
+                                  AND Status != 'Cancelled'";
+
                     SqlCommand checkCmd = new SqlCommand(checkQuery, con);
-                    //using parameters here para safe from malicious SQL
                     checkCmd.Parameters.AddWithValue("@Room", room);
                     checkCmd.Parameters.AddWithValue("@Date", dateInput);
                     checkCmd.Parameters.AddWithValue("@Slot", timeSlot);
 
-                    if ((int)checkCmd.ExecuteScalar() > 0)
+                    int alreadyBooked = (int)checkCmd.ExecuteScalar();
+
+                    // C. Capacity Enforcement
+                    if (alreadyBooked >= maxRooms)
                     {
-                        lblStatus.Text = $"The slot {timeSlot} is already taken!";
+                        lblStatus.Text = $"Slot {timeSlot} is fully booked. (Max {maxRooms} rooms allowed).";
                         lblStatus.ForeColor = System.Drawing.Color.Red;
-                        return;
+                        return; // Stop the execution here
                     }
                 }
 
-                string insertQuery = @"INSERT INTO Bookings (UserEmail, StudioRoom, BookingDate, BookingTime, SelectedInstruments, TotalPrice) 
-                                       VALUES (@Email, @Room, @Date, @Time, @Instruments, @Price)";
+                // D. PROCEED TO INSERT if all slots passed the check
+                string insertQuery = @"INSERT INTO Bookings (UserEmail, StudioRoom, BookingDate, BookingTime, SelectedInstruments, TotalPrice, Status, CreatedAt) 
+                               VALUES (@Email, @Room, @Date, @Time, @Instruments, @Price, 'Confirmed', GETDATE())";
 
                 SqlCommand cmd = new SqlCommand(insertQuery, con);
                 cmd.Parameters.AddWithValue("@Email", email);
@@ -153,13 +169,13 @@ namespace Music_Studio_Booking
                 cmd.Parameters.AddWithValue("@Instruments", instrumentsString);
                 cmd.Parameters.AddWithValue("@Price", totalPrice);
 
-                //saving the booking sa database — using ExecuteNonQuery kasi no data is returned
                 cmd.ExecuteNonQuery();
 
-                lblStatus.Text = $"Booking Successful for {selectedTimes.Count} hours! Total: P{totalPrice}";
+                lblStatus.Text = $"Booking Successful! Total: P{totalPrice:N2}";
                 lblStatus.ForeColor = System.Drawing.Color.Green;
             }
         }
-    }
-}
 
+    }
+
+}

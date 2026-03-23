@@ -51,32 +51,32 @@ nav {
         position: relative;
     }
 
-.nav-links a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    z-index: 1;
-}
+    .nav-links a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        z-index: 1;
+    }
 
-.nav-links a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-    transition: left 0.5s;
-    z-index: 0;
-    pointer-events: none; /* keeps click target stable */
-}
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.5s;
+            z-index: 0;
+            pointer-events: none; /* keeps click target stable */
+        }
 
         .nav-links a:hover::before {
             left: 100%;
@@ -763,11 +763,11 @@ nav {
     margin: 0 auto;
 }
 
-.profile-card h2 {
-    color: #ffd700;
-    margin-bottom: 1.25rem;
-    font-size: 1.6rem;
-}
+    .profile-card h2 {
+        color: #ffd700;
+        margin-bottom: 1.25rem;
+        font-size: 1.6rem;
+    }
 
 .profile-row {
     display: flex;
@@ -778,9 +778,9 @@ nav {
     border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.profile-row:first-of-type {
-    border-top: none;
-}
+    .profile-row:first-of-type {
+        border-top: none;
+    }
 
 .profile-label {
     color: #cccccc;
@@ -820,10 +820,10 @@ nav {
     background: rgba(255, 107, 107, 0.08);
 }
 
-.profile-home-link:hover,
-.profile-logout-link:hover {
-    transform: translateY(-1px);
-}
+    .profile-home-link:hover,
+    .profile-logout-link:hover {
+        transform: translateY(-1px);
+    }
 
 .empty-state {
     text-align: center;
@@ -1487,4 +1487,51 @@ footer {
     .form-group textarea {
         padding: 0.9rem 1rem;
     }
+
+    /* Ensure the table fills the card */
+    .bookings-grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        table-layout: auto; /* Changed to auto to allow dynamic spacing */
+    }
+
+        /* Base cell styling */
+        .bookings-grid th,
+        .bookings-grid td {
+            padding: 12px 5px;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Push the headers to align with content */
+        .bookings-grid th {
+            color: #ffd700;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+            /* TARGET THE LAST COLUMN (Action) */
+            .bookings-grid th:last-child,
+            .bookings-grid td:last-child {
+                text-align: right;
+                padding-right: 10px;
+            }
+
+    /* Improve the Cancel link visibility */
+    .cancel-link {
+        color: #ff4d4d !important;
+        text-decoration: none;
+        font-weight: bold;
+        border: 1px solid #ff4d4d;
+        padding: 4px 10px;
+        border-radius: 4px;
+        transition: 0.3s;
+    }
+
+        .cancel-link:hover {
+            background: #ff4d4d;
+            color: #fff !important;
+
+        }
+
 }
