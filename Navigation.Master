@@ -36,6 +36,7 @@
                     <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
                         <li><a href="StaffRequests.aspx">Pending Requests</a></li>
                         <li><a href="StaffSchedule.aspx">Schedule</a></li>
+                        <li><a href="StaffInstruments.aspx">Instruments</a></li>
                         <li><a href="StaffMessages.aspx">Messages</a></li>
                         <li><a href="Logout.aspx">Logout</a></li>
                     </asp:PlaceHolder>

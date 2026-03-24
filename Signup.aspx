@@ -29,7 +29,7 @@
                             ID="revPassword"
                             runat="server"
                             ControlToValidate="signupPassword"
-                            ValidationExpression="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                            ValidationExpression="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d\s]).{8,}$"
                             ErrorMessage="Min 8 chars, must include letter, number, and special char."
                             ForeColor="Red"
                             Display="Dynamic">

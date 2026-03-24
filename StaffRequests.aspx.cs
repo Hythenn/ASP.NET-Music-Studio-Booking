@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Music_Studio_Booking
 {
@@ -60,53 +61,58 @@ namespace Music_Studio_Booking
 
         private void LoadRequests()
         {
-            var data = new List<BookingViewModel>();
+            var allBookings = new List<BookingViewModel>();
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
 
             using (SqlConnection con = new SqlConnection(connString))
             {
                 con.Open();
                 string sql = @"SELECT BookingID, UserEmail, StudioRoom, BookingDate, BookingTime,
-                                      CreatedAt, SelectedInstruments, TotalPrice, Status
-                               FROM Bookings
-                               ORDER BY CreatedAt DESC";
+                              CreatedAt, SelectedInstruments, TotalPrice, Status
+                       FROM Bookings
+                       ORDER BY BookingDate DESC"; // Order by the actual event date
 
                 SqlCommand cmd = new SqlCommand(sql, con);
-                //reading each row from the query results gamit ang reader
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    BookingViewModel vm = new BookingViewModel();
-                    vm.Id                  = reader.GetInt32(reader.GetOrdinal("BookingID"));
-                    vm.CustomerEmail       = reader["UserEmail"].ToString();
-                    vm.CustomerName        = reader["UserEmail"].ToString(); //==========NO SEPARATE NAME COLUMN, USE EMAIL
-                    vm.StudioRoom          = reader["StudioRoom"].ToString();
-                    vm.BookingDate         = Convert.ToDateTime(reader["BookingDate"]);
-                    vm.BookingTime         = reader["BookingTime"].ToString();
-                    vm.CreatedAt           = Convert.ToDateTime(reader["CreatedAt"]);
-                    vm.SelectedInstruments = reader["SelectedInstruments"].ToString();
-                    vm.TotalPrice          = Convert.ToDecimal(reader["TotalPrice"]);
-                    vm.Status              = reader["Status"].ToString();
-                    data.Add(vm);
+                    allBookings.Add(new BookingViewModel
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("BookingID")),
+                        CustomerEmail = reader["UserEmail"].ToString(),
+                        StudioRoom = reader["StudioRoom"].ToString(),
+                        BookingDate = Convert.ToDateTime(reader["BookingDate"]),
+                        BookingTime = reader["BookingTime"].ToString(),
+                        CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
+                        SelectedInstruments = reader["SelectedInstruments"].ToString(),
+                        TotalPrice = Convert.ToDecimal(reader["TotalPrice"]),
+                        Status = reader["Status"].ToString(),
+                        StatusCss = GetStatusCss(reader["Status"].ToString())
+                    });
                 }
             }
 
-            if (data.Count == 0)
+            if (allBookings.Count == 0)
             {
                 PanelEmpty.Visible = true;
-                rptRequests.Visible = false;
+                rptGroups.Visible = false;
                 return;
             }
 
+
+            var groupedData = allBookings
+                .GroupBy(b => b.BookingDate.ToString("MMMM yyyy")) // Group by "Month Year"
+                .Select(g => new {
+                    GroupName = g.Key,
+                    Bookings = g.ToList()
+                })
+                .ToList();
+
             PanelEmpty.Visible = false;
-            rptRequests.Visible = true;
+            rptGroups.Visible = true;
 
-            foreach (var item in data)
-                item.StatusCss = GetStatusCss(item.Status);
-
-            //binding the list of bookings sa repeater so they display on the page
-            rptRequests.DataSource = data;
-            rptRequests.DataBind();
+            rptGroups.DataSource = groupedData;
+            rptGroups.DataBind();
         }
 
         //==========RETURN CSS CLASS NAME BASED ON BOOKING STATUS

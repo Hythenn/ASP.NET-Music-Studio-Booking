@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\style.css" />
+    <Content Include="StaffInstruments.aspx" />
     <Content Include="Web.config" />
     <Content Include="Home.aspx" />
     <Content Include="Studios.aspx" />
@@ -114,6 +115,13 @@
     </Compile>
     <Compile Include="Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="StaffInstruments.aspx.cs">
+      <DependentUpon>StaffInstruments.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="StaffInstruments.aspx.designer.cs">
+      <DependentUpon>StaffInstruments.aspx</DependentUpon>
     </Compile>
     <Compile Include="Studios.aspx.cs">
       <DependentUpon>Studios.aspx</DependentUpon>

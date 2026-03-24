@@ -1,5 +1,6 @@
 <%@ Page Title="Staff - Booking Requests" Language="C#" MasterPageFile="~/Navigation.Master" AutoEventWireup="true"
     CodeBehind="StaffRequests.aspx.cs" Inherits="Music_Studio_Booking.StaffRequests" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <section class="page-hero">
         <div class="hero-content">
@@ -18,57 +19,29 @@
             <!--SHOW IF NO RESULTS FOUND FROM DATABASE -->
             <asp:Panel ID="PanelEmpty" runat="server" CssClass="empty-state" Visible="false"></asp:Panel>
 
-            <asp:Repeater ID="rptRequests" runat="server" OnItemCommand="rptRequests_ItemCommand">
-                <HeaderTemplate>
-                    <div class="requests-list">
-                </HeaderTemplate>
+            <asp:Repeater ID="rptGroups" runat="server">
                 <ItemTemplate>
-                    <div class="request-card <%# Eval("StatusCss") %>">
-                        <div class="request-main" onclick="this.parentElement.classList.toggle('expanded');">
-                            <div class="request-meta">
-                                <span class="request-time"><%# Eval("CreatedAtDisplay") %></span>
-                                <span class="request-status-badge"><%# Eval("Status") %></span>
-                            </div>
-                            <h3 class="request-title">
-                                <%# Eval("CustomerEmail") %> &bull; <%# Eval("StudioName") %>
+                    <div class="schedule-day-header" style="margin-top: 30px; border-bottom: 2px solid #ffd700; padding-bottom: 5px;">
+                        <h3 style="color: #ffd700;"><%# Eval("GroupName") %></h3>
+                    </div>
+
+                    <div class="requests-list">
+                        <asp:Repeater ID="rptInner" runat="server" DataSource='<%# Eval("Bookings") %>' OnItemCommand="rptRequests_ItemCommand">
+                            <ItemTemplate>
+                                <div class="request-card <%# Eval("StatusCss") %>">
+                                    <div class="request-main" onclick="this.parentElement.classList.toggle('expanded');">
+                                        <h3 class="request-title">
+                                            <%# Eval("CustomerEmail") %> &bull; <%# Eval("StudioName") %>
                             </h3>
-                            <p class="request-summary">
-                                <%# Eval("DateDisplay") %> &bull; <%# Eval("BookingTime") %>
-                            </p>
-                        </div>
-                        <div class="request-details">
-                            <div class="request-detail-grid">
-                                <div>
-                                    <h4>Customer</h4>
-                                    <p><strong>Email:</strong> <%# Eval("CustomerEmail") %></p>
+                                        <p class="request-summary">
+                                            <strong>Date:</strong> <%# Eval("DateDisplay") %> | <strong>Time:</strong> <%# Eval("BookingTime") %>
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4>Booking</h4>
-                                    <p><strong>Studio:</strong> <%# Eval("StudioName") %></p>
-                                    <p><strong>Date:</strong> <%# Eval("DateDisplay") %></p>
-                                    <p><strong>Time:</strong> <%# Eval("BookingTime") %></p>
-                                    <p><strong>Instruments:</strong> <%# Eval("SelectedInstruments") %></p>
-                                    <p><strong>Total:</strong> <%# Eval("TotalPriceDisplay") %></p>
-                                </div>
-                            </div>
-                            <div class="request-actions">
-                                <asp:Button runat="server"
-                                            CssClass="btn-request btn-accept"
-                                            Text="Accept"
-                                            CommandName="Accept"
-                                            CommandArgument='<%# Eval("Id") %>' />
-                                <asp:Button runat="server"
-                                            CssClass="btn-request btn-decline"
-                                            Text="Decline"
-                                            CommandName="Decline"
-                                            CommandArgument='<%# Eval("Id") %>' />
-                            </div>
-                        </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
                     </div>
                 </ItemTemplate>
-                <FooterTemplate>
-                    </div>
-                </FooterTemplate>
             </asp:Repeater>
         </div>
     </section>
