@@ -96,29 +96,66 @@ namespace Music_Studio_Booking
 
         protected void btnRequestBooking_Click(object sender, EventArgs e)
         {
+            string room = ddlStudio.SelectedValue;
+            string date = txtDate.Text;
+
+            // 1. Get list of selected times
+            var selectedTimes = cblTime.Items.Cast<ListItem>()
+                                .Where(i => i.Selected)
+                                .Select(i => i.Text).ToList();
+
+            if (selectedTimes.Count == 0)
+            {
+                lblStatus.Text = "Please select at least one time slot.";
+                return;
+            }
+
             using (SqlConnection con = new SqlConnection(connString))
             {
-                decimal finalPrice = UpdateRunningTotal();
+                con.Open();
 
-                // Convert list selections to comma-separated strings for DB storage
+                // --- PHASE 1: AVAILABILITY CHECK ---
+                foreach (string timeSlot in selectedTimes)
+                {
+                    // Count how many people booked this specific room + date + timeslot
+                    string checkSql = @"SELECT COUNT(*) FROM Bookings 
+                                WHERE StudioRoom = @Room 
+                                AND BookingDate = @Date 
+                                AND BookingTime LIKE @Slot
+                                AND Status != 'Cancelled'";
+
+                    SqlCommand checkCmd = new SqlCommand(checkSql, con);
+                    checkCmd.Parameters.AddWithValue("@Room", room);
+                    checkCmd.Parameters.AddWithValue("@Date", date);
+                    checkCmd.Parameters.AddWithValue("@Slot", "%" + timeSlot + "%");
+
+                    int existingBookings = (int)checkCmd.ExecuteScalar();
+
+                    if (existingBookings >= 1)
+                    {
+                        lblStatus.Text = $"Sorry! {room} is already booked for {timeSlot}.";
+                        lblStatus.ForeColor = System.Drawing.Color.Red;
+                        return; 
+                    }
+                }
+
+                // --- PHASE 2: INSERTION (Only runs if Phase 1 passed) ---
+                decimal finalPrice = UpdateRunningTotal();
                 string instList = string.Join(", ", cblInstruments.Items.Cast<ListItem>().Where(i => i.Selected).Select(i => i.Text));
-                string times = string.Join(", ", cblTime.Items.Cast<ListItem>().Where(i => i.Selected).Select(i => i.Text));
+                string timesString = string.Join(", ", selectedTimes);
 
                 string insertQuery = @"INSERT INTO Bookings (UserEmail, StudioRoom, BookingDate, BookingTime, SelectedInstruments, TotalPrice, Status, CreatedAt) 
-                                       VALUES (@Email, @Room, @Date, @Time, @Instruments, @Price, 'Confirmed', GETDATE())";
+                               VALUES (@Email, @Room, @Date, @Time, @Instruments, @Price, 'Confirmed', GETDATE())";
 
                 SqlCommand cmd = new SqlCommand(insertQuery, con);
-                // 
                 cmd.Parameters.AddWithValue("@Email", Session["UserEmail"]?.ToString() ?? "Unknown");
-                cmd.Parameters.AddWithValue("@Room", ddlStudio.SelectedValue);
-                cmd.Parameters.AddWithValue("@Date", txtDate.Text);
-                cmd.Parameters.AddWithValue("@Time", times);
+                cmd.Parameters.AddWithValue("@Room", room);
+                cmd.Parameters.AddWithValue("@Date", date);
+                cmd.Parameters.AddWithValue("@Time", timesString);
                 cmd.Parameters.AddWithValue("@Instruments", instList);
                 cmd.Parameters.AddWithValue("@Price", finalPrice);
 
-                con.Open();
                 cmd.ExecuteNonQuery();
-
                 Response.Redirect("Profile.aspx");
             }
         }
