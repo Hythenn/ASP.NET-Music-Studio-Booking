@@ -113,6 +113,7 @@ namespace Music_Studio_Booking
                 cmd.ExecuteNonQuery();
                 lblStatus.Text = "Booking Successful!";
                 lblStatus.ForeColor = System.Drawing.Color.Green;
+                Response.Redirect("Profile.aspx");
             }
         }
     }
