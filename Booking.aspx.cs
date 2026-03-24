@@ -20,7 +20,7 @@ namespace Music_Studio_Booking
 
             if (!IsPostBack)
             {
-                // Prevent past-date bookings
+                // Set the minimum date to today
                 txtDate.Attributes["min"] = DateTime.Now.ToString("yyyy-MM-dd");
                 LoadInstruments();
                 UpdateRunningTotal();
@@ -58,7 +58,7 @@ namespace Music_Studio_Booking
             int selectedHours = cblTime.Items.Cast<ListItem>().Count(i => i.Selected);
             decimal instrumentTotal = 0;
 
-            // Studio Rates
+            // Fetch dynamic rates from the DB or use your existing switch
             switch (ddlStudio.SelectedValue)
             {
                 case "studio-a": hourlyRate = 300; break;
@@ -66,7 +66,6 @@ namespace Music_Studio_Booking
                 case "studio-c": hourlyRate = 900; break;
             }
 
-            // Instrument Calculation
             var selectedIds = cblInstruments.Items.Cast<ListItem>()
                                 .Where(i => i.Selected)
                                 .Select(i => i.Value).ToList();
@@ -95,13 +94,11 @@ namespace Music_Studio_Booking
 
         protected void btnRequestBooking_Click(object sender, EventArgs e)
         {
-            // RESET STATUS AT START
-            lblStatus.Text = "";
-
+            lblStatus.Text = ""; // Clear status
             string room = ddlStudio.SelectedValue;
             string date = txtDate.Text;
 
-            // 1. Clean up user input - ensuring NO SPACES to match DB format
+            // 1. Prepare selected times (Standardized format)
             var selectedTimes = cblTime.Items.Cast<ListItem>()
                                 .Where(i => i.Selected)
                                 .Select(i => i.Text.Replace(" ", "").Trim())
@@ -122,20 +119,20 @@ namespace Music_Studio_Booking
             {
                 con.Open();
 
-                // --- GET STUDIO CAPACITY ---
+                // --- PHASE 1: DYNAMIC CAPACITY CHECK ---
+                // Query your Studios table for the TotalRooms allowed for the selected room
                 SqlCommand capacityCmd = new SqlCommand("SELECT TotalRooms FROM Studios WHERE StudioID = @RoomID", con);
                 capacityCmd.Parameters.AddWithValue("@RoomID", room);
                 object capacityResult = capacityCmd.ExecuteScalar();
                 int maxCapacity = (capacityResult != null) ? Convert.ToInt32(capacityResult) : 1;
 
-                //  AVAILABILITY CHECK ---
                 foreach (string timeSlot in selectedTimes)
                 {
                     string checkSql = @"SELECT COUNT(*) FROM Bookings 
-                                WHERE StudioRoom = @Room 
-                                AND BookingDate = @Date 
-                                AND (',' + REPLACE(BookingTime, ' ', '') + ',') LIKE @Slot 
-                                AND Status NOT IN ('Declined', 'Cancelled')";
+                                        WHERE StudioRoom = @Room 
+                                        AND BookingDate = @Date 
+                                        AND (',' + REPLACE(BookingTime, ' ', '') + ',') LIKE @Slot 
+                                        AND Status NOT IN ('Declined', 'Cancelled')";
 
                     SqlCommand checkCmd = new SqlCommand(checkSql, con);
                     checkCmd.Parameters.AddWithValue("@Room", room);
@@ -146,61 +143,90 @@ namespace Music_Studio_Booking
 
                     if (currentBookings >= maxCapacity)
                     {
-                        lblStatus.Text = $"Sorry! {room} is fully booked for {timeSlot}.";
+                        lblStatus.Text = $"Sorry! {room} has reached its limit of {maxCapacity} rooms for {timeSlot}.";
                         lblStatus.ForeColor = System.Drawing.Color.Red;
-                        return; // Stop here if full
+                        return;
                     }
                 }
 
-                //  INSTRUMENT CHECK ---
+                // --- PHASE 2: INSTRUMENT INVENTORY CHECK ---
                 foreach (ListItem item in selectedInstruments)
                 {
-                    string instrumentName = item.Text.Split('(')[0].Trim();
-                    SqlCommand stockCmd = new SqlCommand("SELECT TotalQuantity FROM Instruments WHERE InstrumentName = @Name", con);
-                    stockCmd.Parameters.AddWithValue("@Name", instrumentName);
+                    int instID = int.Parse(item.Value);
+                    string instName = item.Text.Split('(')[0].Trim();
+
+                    SqlCommand stockCmd = new SqlCommand("SELECT TotalQuantity FROM Instruments WHERE InstrumentID = @ID", con);
+                    stockCmd.Parameters.AddWithValue("@ID", instID);
                     int totalStock = Convert.ToInt32(stockCmd.ExecuteScalar());
 
                     foreach (string timeSlot in selectedTimes)
                     {
-                        string usageSql = @"SELECT COUNT(*) FROM Bookings 
-                                    WHERE SelectedInstruments LIKE @InstName 
-                                    AND BookingDate = @Date 
-                                    AND (',' + REPLACE(BookingTime, ' ', '') + ',') LIKE @Slot 
-                                    AND Status NOT IN ('Declined', 'Cancelled')";
+                        string usageSql = @"SELECT COUNT(*) FROM BookingItems bi
+                                            JOIN Bookings b ON bi.BookingID = b.BookingID
+                                            WHERE bi.InstrumentID = @InstID 
+                                            AND b.BookingDate = @Date 
+                                            AND (',' + REPLACE(b.BookingTime, ' ', '') + ',') LIKE @Slot 
+                                            AND b.Status NOT IN ('Declined', 'Cancelled')";
 
                         SqlCommand usageCmd = new SqlCommand(usageSql, con);
-                        usageCmd.Parameters.AddWithValue("@InstName", "%" + instrumentName + "%");
+                        usageCmd.Parameters.AddWithValue("@InstID", instID);
                         usageCmd.Parameters.AddWithValue("@Date", date);
                         usageCmd.Parameters.AddWithValue("@Slot", "%," + timeSlot + ",%");
 
                         if ((int)usageCmd.ExecuteScalar() >= totalStock)
                         {
-                            lblStatus.Text = $"All {instrumentName}s are booked for {timeSlot}.";
+                            lblStatus.Text = $"All {instName}s are booked for {timeSlot}.";
+                            lblStatus.ForeColor = System.Drawing.Color.Red;
                             return;
                         }
                     }
                 }
 
-                //  INSERTION 
-                decimal finalPrice = UpdateRunningTotal();
-                string instList = string.Join(", ", selectedInstruments.Select(i => i.Text));
-                string timesForDb = "," + string.Join(",", selectedTimes) + ",";
+                // --- PHASE 3: TRANSACTIONAL INSERT ---
+                SqlTransaction transaction = con.BeginTransaction();
+                try
+                {
+                    decimal finalPrice = UpdateRunningTotal();
+                    string timesForDb = "," + string.Join(",", selectedTimes) + ",";
 
-                string insertQuery = @"INSERT INTO Bookings (UserEmail, StudioRoom, BookingDate, BookingTime, SelectedInstruments, TotalPrice, Status, CreatedAt) 
-                               VALUES (@Email, @Room, @Date, @Time, @Instruments, @Price, 'Pending', GETDATE())";
+                    string insertBookingSql = @"INSERT INTO Bookings (UserEmail, StudioRoom, BookingDate, BookingTime, TotalPrice, Status, CreatedAt) 
+                                               OUTPUT INSERTED.BookingID
+                                               VALUES (@Email, @Room, @Date, @Time, @Price, 'Pending', GETDATE())";
 
-                SqlCommand cmd = new SqlCommand(insertQuery, con);
-                cmd.Parameters.AddWithValue("@Email", Session["UserEmail"]?.ToString() ?? "Unknown");
-                cmd.Parameters.AddWithValue("@Room", room);
-                cmd.Parameters.AddWithValue("@Date", date);
-                cmd.Parameters.AddWithValue("@Time", timesForDb);
-                cmd.Parameters.AddWithValue("@Instruments", instList);
-                cmd.Parameters.AddWithValue("@Price", finalPrice);
+                    SqlCommand cmd = new SqlCommand(insertBookingSql, con, transaction);
+                    cmd.Parameters.AddWithValue("@Email", Session["UserEmail"].ToString());
+                    cmd.Parameters.AddWithValue("@Room", room);
+                    cmd.Parameters.AddWithValue("@Date", date);
+                    cmd.Parameters.AddWithValue("@Time", timesForDb);
+                    cmd.Parameters.AddWithValue("@Price", finalPrice);
 
-                cmd.ExecuteNonQuery();
+                    int newBookingID = (int)cmd.ExecuteScalar();
 
-                // UNCOMMENT THIS to prevent the user from seeing the error on the next click
-                Response.Redirect("Profile.aspx");
+                    foreach (ListItem item in selectedInstruments)
+                    {
+                        int instrumentID = int.Parse(item.Value);
+
+                        SqlCommand priceCmd = new SqlCommand("SELECT RentalPrice FROM Instruments WHERE InstrumentID = @ID", con, transaction);
+                        priceCmd.Parameters.AddWithValue("@ID", instrumentID);
+                        decimal currentPrice = (decimal)priceCmd.ExecuteScalar();
+
+                        string insertItemSql = "INSERT INTO BookingItems (BookingID, InstrumentID, PriceAtBooking) VALUES (@BID, @IID, @Price)";
+                        SqlCommand itemCmd = new SqlCommand(insertItemSql, con, transaction);
+                        itemCmd.Parameters.AddWithValue("@BID", newBookingID);
+                        itemCmd.Parameters.AddWithValue("@IID", instrumentID);
+                        itemCmd.Parameters.AddWithValue("@Price", currentPrice);
+                        itemCmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    //Response.Redirect("Profile.aspx");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    lblStatus.Text = "Error saving booking: " + ex.Message;
+                    lblStatus.ForeColor = System.Drawing.Color.Red;
+                }
             }
         }
     }

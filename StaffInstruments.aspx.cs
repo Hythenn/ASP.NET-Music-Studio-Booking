@@ -9,11 +9,11 @@ namespace Music_Studio_Booking
 {
     public partial class StaffInstruments : System.Web.UI.Page
     {
-        // Fix for CS0103: Declare this at the class level
         string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Security Check
             if (Session["IsAdmin"] == null || Session["IsAdmin"].ToString() != "True")
             {
                 Response.Redirect("Login.aspx");
@@ -26,12 +26,12 @@ namespace Music_Studio_Booking
             }
         }
 
-        // Fix for CS0103: This method refreshes your table
         private void BindGrid()
         {
             using (SqlConnection con = new SqlConnection(connString))
             {
-                string sql = "SELECT * FROM Instruments";
+                // Select all columns so we have access to ID, Name, Price, and Quantities
+                string sql = "SELECT InstrumentID, InstrumentName, RentalPrice, TotalQuantity, AvailableQuantity, IsActive FROM Instruments";
                 SqlDataAdapter da = new SqlDataAdapter(sql, con);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -42,23 +42,33 @@ namespace Music_Studio_Booking
 
         protected void btnAddInstrument_Click(object sender, EventArgs e)
         {
+            // Validation: Prevent crashes on empty inputs
+            if (string.IsNullOrWhiteSpace(txtNewName.Text) ||
+                string.IsNullOrWhiteSpace(txtNewPrice.Text) ||
+                string.IsNullOrWhiteSpace(txtNewQty.Text))
+            {
+                // You could add a label for errors here
+                return;
+            }
+
             using (SqlConnection con = new SqlConnection(connString))
             {
-                // Note: Ensure your txtNewName, txtNewPrice, and txtNewQty IDs match your ASPX file
-                string sql = "INSERT INTO Instruments (InstrumentName, RentalPrice, AvailableQuantity, TotalQuantity, IsActive) VALUES (@Name, @Price, @Qty, @Qty, 1)";
+                // We set both Available and Total quantity to the same value on creation
+                string sql = @"INSERT INTO Instruments (InstrumentName, RentalPrice, TotalQuantity, AvailableQuantity, IsActive) 
+                               VALUES (@Name, @Price, @Qty, @Qty, 1)";
+
                 SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@Name", txtNewName.Text);
+                cmd.Parameters.AddWithValue("@Name", txtNewName.Text.Trim());
                 cmd.Parameters.AddWithValue("@Price", decimal.Parse(txtNewPrice.Text));
                 cmd.Parameters.AddWithValue("@Qty", int.Parse(txtNewQty.Text));
 
                 con.Open();
                 cmd.ExecuteNonQuery();
             }
-            BindGrid(); // Refresh after adding
-            txtNewName.Text = ""; txtNewPrice.Text = ""; txtNewQty.Text = ""; // Clear form
+            BindGrid();
+            txtNewName.Text = ""; txtNewPrice.Text = ""; txtNewQty.Text = "";
         }
 
-        // Add these to handle the GridView buttons
         protected void gvInstruments_RowEditing(object sender, GridViewEditEventArgs e)
         {
             gvInstruments.EditIndex = e.NewEditIndex;
@@ -73,7 +83,9 @@ namespace Music_Studio_Booking
 
         protected void gvInstruments_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
+            // Ensure DataKeyNames="InstrumentID" is set in your ASPX GridView tag
             int id = Convert.ToInt32(gvInstruments.DataKeys[e.RowIndex].Value);
+
             using (SqlConnection con = new SqlConnection(connString))
             {
                 SqlCommand cmd = new SqlCommand("DELETE FROM Instruments WHERE InstrumentID=@Id", con);
@@ -83,23 +95,24 @@ namespace Music_Studio_Booking
             }
             BindGrid();
         }
+
         protected void gvInstruments_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
-            // 1. Get the ID of the instrument being edited
             int id = Convert.ToInt32(gvInstruments.DataKeys[e.RowIndex].Value);
 
-            // 2. Extract the new values from the GridView TextBoxes
-            // Note: Cells[0] is Name, Cells[1] is Price, Cells[2] is Quantity
-            string name = ((TextBox)gvInstruments.Rows[e.RowIndex].Cells[0].Controls[0]).Text;
+            // Extracting values from EditItemTemplate TextBoxes
+            // Use FindControl if you used Templates, otherwise index into Cells
+            string name = ((TextBox)gvInstruments.Rows[e.RowIndex].Cells[0].Controls[0]).Text.Trim();
             decimal price = decimal.Parse(((TextBox)gvInstruments.Rows[e.RowIndex].Cells[1].Controls[0]).Text);
             int qty = int.Parse(((TextBox)gvInstruments.Rows[e.RowIndex].Cells[2].Controls[0]).Text);
 
-            // 3. Update the Database
             using (SqlConnection con = new SqlConnection(connString))
             {
+                // IMPORTANT: When updating TotalQuantity, we usually update AvailableQuantity too 
+                // unless you have a separate logic for currently rented items.
                 string sql = @"UPDATE Instruments 
-                       SET InstrumentName=@Name, RentalPrice=@Price, AvailableQuantity=@Qty, TotalQuantity=@Qty 
-                       WHERE InstrumentID=@Id";
+                               SET InstrumentName=@Name, RentalPrice=@Price, TotalQuantity=@Qty, AvailableQuantity=@Qty 
+                               WHERE InstrumentID=@Id";
 
                 SqlCommand cmd = new SqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@Name", name);
@@ -111,7 +124,6 @@ namespace Music_Studio_Booking
                 cmd.ExecuteNonQuery();
             }
 
-            // 4. Exit Edit Mode and Refresh the list
             gvInstruments.EditIndex = -1;
             BindGrid();
         }

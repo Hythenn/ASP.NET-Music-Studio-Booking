@@ -17,9 +17,9 @@
                     <label for="ddlStudio">Select Studio</label>
                     <asp:DropDownList ID="ddlStudio" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="CalculateTotal">
                         <asp:ListItem Value="">Choose a studio</asp:ListItem>
-                        <asp:ListItem Value="Studio A">Studio A – Modern Recording Room (P300/hour)</asp:ListItem>
-                        <asp:ListItem Value="Studio B">Studio B – Vocal Booth & Mixing Gear (P600/hour)</asp:ListItem>
-                        <asp:ListItem Value="Studio C">Studio C – Large Band Room (P900/hour)</asp:ListItem>
+                        <asp:ListItem Value="studio-a">Studio A – Modern Recording Room (P300/hour)</asp:ListItem>
+                        <asp:ListItem Value="studio-b">Studio B – Vocal Booth & Mixing Gear (P600/hour)</asp:ListItem>
+                        <asp:ListItem Value="studio-c">Studio C – Large Band Room (P900/hour)</asp:ListItem>
                     </asp:DropDownList>
                 </div>
 
