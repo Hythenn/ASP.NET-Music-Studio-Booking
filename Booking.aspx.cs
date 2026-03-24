@@ -128,10 +128,9 @@ namespace Music_Studio_Booking
                 object capacityResult = capacityCmd.ExecuteScalar();
                 int maxCapacity = (capacityResult != null) ? Convert.ToInt32(capacityResult) : 1;
 
-                // --- PHASE 1: AVAILABILITY CHECK ---
+                //  AVAILABILITY CHECK ---
                 foreach (string timeSlot in selectedTimes)
                 {
-                    // We use the 'Comma Sandwich' on BOTH the DB column and the search term
                     string checkSql = @"SELECT COUNT(*) FROM Bookings 
                                 WHERE StudioRoom = @Room 
                                 AND BookingDate = @Date 
@@ -153,7 +152,7 @@ namespace Music_Studio_Booking
                     }
                 }
 
-                // --- PHASE 2: INSTRUMENT CHECK ---
+                //  INSTRUMENT CHECK ---
                 foreach (ListItem item in selectedInstruments)
                 {
                     string instrumentName = item.Text.Split('(')[0].Trim();
@@ -182,7 +181,7 @@ namespace Music_Studio_Booking
                     }
                 }
 
-                // --- PHASE 3: INSERTION ---
+                //  INSERTION 
                 decimal finalPrice = UpdateRunningTotal();
                 string instList = string.Join(", ", selectedInstruments.Select(i => i.Text));
                 string timesForDb = "," + string.Join(",", selectedTimes) + ",";
@@ -201,7 +200,7 @@ namespace Music_Studio_Booking
                 cmd.ExecuteNonQuery();
 
                 // UNCOMMENT THIS to prevent the user from seeing the error on the next click
-                //Response.Redirect("Profile.aspx");
+                Response.Redirect("Profile.aspx");
             }
         }
     }
