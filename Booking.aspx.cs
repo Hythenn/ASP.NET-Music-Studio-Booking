@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web.UI.WebControls;
@@ -9,6 +10,7 @@ namespace Music_Studio_Booking
 {
     public partial class WebForm7 : System.Web.UI.Page
     {
+        // Centralized connection string
         string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -29,6 +31,7 @@ namespace Music_Studio_Booking
 
             using (SqlConnection con = new SqlConnection(connString))
             {
+                // SELECT
                 string query = "SELECT InstrumentID, InstrumentName, RentalPrice FROM Instruments";
                 SqlCommand cmd = new SqlCommand(query, con);
                 con.Open();
@@ -38,7 +41,7 @@ namespace Music_Studio_Booking
                 {
                     string name = reader["InstrumentName"].ToString();
                     decimal price = Convert.ToDecimal(reader["RentalPrice"]);
-                    string id = reader["InstrumentID"].ToString(); // We store ID in Value
+                    string id = reader["InstrumentID"].ToString();
 
                     string priceText = price > 0 ? $"(P{price:N0})" : "(Free)";
                     cblInstruments.Items.Add(new ListItem($"{name} {priceText}", id));
@@ -51,9 +54,11 @@ namespace Music_Studio_Booking
         private decimal UpdateRunningTotal()
         {
             decimal hourlyRate = 0;
+            // LINQ: Count how many time checkboxes are checked
             int selectedHours = cblTime.Items.Cast<ListItem>().Count(i => i.Selected);
             decimal instrumentTotal = 0;
 
+            // Switch for Studio Rates
             switch (ddlStudio.SelectedValue)
             {
                 case "studio-a": hourlyRate = 300; break;
@@ -61,7 +66,7 @@ namespace Music_Studio_Booking
                 case "studio-c": hourlyRate = 900; break;
             }
 
-            // Optimize: One DB call to get all prices for selected IDs
+            // Instrument Calculation
             var selectedIds = cblInstruments.Items.Cast<ListItem>()
                                 .Where(i => i.Selected)
                                 .Select(i => i.Value).ToList();
@@ -70,8 +75,14 @@ namespace Music_Studio_Booking
             {
                 using (SqlConnection con = new SqlConnection(connString))
                 {
-                    string query = $"SELECT SUM(RentalPrice) FROM Instruments WHERE InstrumentID IN ({string.Join(",", selectedIds)})";
+                    // Create parameters (@p0, @p1...) for each ID to prevent SQL injection
+                    var pars = selectedIds.Select((id, i) => "@p" + i).ToList();
+                    string query = $"SELECT SUM(RentalPrice) FROM Instruments WHERE InstrumentID IN ({string.Join(",", pars)})";
+
                     SqlCommand cmd = new SqlCommand(query, con);
+                    for (int i = 0; i < selectedIds.Count; i++)
+                        cmd.Parameters.AddWithValue("@p" + i, selectedIds[i]);
+
                     con.Open();
                     object result = cmd.ExecuteScalar();
                     instrumentTotal = result != DBNull.Value ? Convert.ToDecimal(result) : 0;
@@ -85,17 +96,11 @@ namespace Music_Studio_Booking
 
         protected void btnRequestBooking_Click(object sender, EventArgs e)
         {
-            // ... Keep your existing validation logic ...
-
             using (SqlConnection con = new SqlConnection(connString))
             {
-                con.Open();
-
-                // PHASE 1 & 2: Capacity Checks (Keep your existing loop logic here)
-                // ... 
-
-                // PHASE 3: Insertion
                 decimal finalPrice = UpdateRunningTotal();
+
+                // Convert list selections to comma-separated strings for DB storage
                 string instList = string.Join(", ", cblInstruments.Items.Cast<ListItem>().Where(i => i.Selected).Select(i => i.Text));
                 string times = string.Join(", ", cblTime.Items.Cast<ListItem>().Where(i => i.Selected).Select(i => i.Text));
 
@@ -103,16 +108,17 @@ namespace Music_Studio_Booking
                                        VALUES (@Email, @Room, @Date, @Time, @Instruments, @Price, 'Confirmed', GETDATE())";
 
                 SqlCommand cmd = new SqlCommand(insertQuery, con);
-                cmd.Parameters.AddWithValue("@Email", Session["UserEmail"].ToString());
+                // 
+                cmd.Parameters.AddWithValue("@Email", Session["UserEmail"]?.ToString() ?? "Unknown");
                 cmd.Parameters.AddWithValue("@Room", ddlStudio.SelectedValue);
                 cmd.Parameters.AddWithValue("@Date", txtDate.Text);
                 cmd.Parameters.AddWithValue("@Time", times);
                 cmd.Parameters.AddWithValue("@Instruments", instList);
                 cmd.Parameters.AddWithValue("@Price", finalPrice);
 
+                con.Open();
                 cmd.ExecuteNonQuery();
-                lblStatus.Text = "Booking Successful!";
-                lblStatus.ForeColor = System.Drawing.Color.Green;
+
                 Response.Redirect("Profile.aspx");
             }
         }

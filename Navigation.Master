@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studios - G-Studio Music Booking</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="<%= ResolveUrl("~/css/style.css") %>">
 </head>
 <body class="body">
     <form id="form1" runat="server"> <header>
@@ -33,6 +33,7 @@
                         <li><a href="Logout.aspx">Logout</a></li>
                     </asp:PlaceHolder>
 
+                    <!-- Admin menu (logged-in admin) -->
                     <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
                         <li><a href="StaffRequests.aspx">Pending Requests</a></li>
                         <li><a href="StaffSchedule.aspx">Schedule</a></li>

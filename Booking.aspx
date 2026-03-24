@@ -50,18 +50,18 @@
                 </div>
 
                 <div class="form-group">
-    <label>Optional Instrument Rentals</label>
-    <div class="instrument-grid">
-        <asp:CheckBoxList ID="cblInstruments" runat="server"
-    CssClass="instrument-grid"
-    RepeatLayout="Table" 
-    RepeatColumns="1"
-    RepeatDirection="Vertical"
-    AutoPostBack="true"
-    OnSelectedIndexChanged="CalculateTotal">
-</asp:CheckBoxList>
-    </div>
-</div>
+                    <label>Optional Instrument Rentals</label>
+                    <div class="instrument-grid">
+                        <asp:CheckBoxList ID="cblInstruments" runat="server"
+                            CssClass="instrument-grid"
+                            RepeatLayout="Table"
+                            RepeatColumns="1"
+                            RepeatDirection="Vertical"
+                            AutoPostBack="true"
+                            OnSelectedIndexChanged="CalculateTotal">
+                        </asp:CheckBoxList>
+                    </div>
+                </div>
 
                 <div class="price-summary">
                     <h3>Current Total:

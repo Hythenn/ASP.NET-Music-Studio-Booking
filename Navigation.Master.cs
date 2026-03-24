@@ -15,7 +15,7 @@ namespace Music_Studio_Booking
             bool isAdmin = Session["IsAdmin"] != null && Session["IsAdmin"].ToString() == "True";
             bool isUser = Session["UserID"] != null;
 
-            //showing or hiding the nav links depende kung sino ang naka-login
+            //showing nav links based on sessionID
             phGuest.Visible = !isAdmin && !isUser;
             phUser.Visible = !isAdmin && isUser;
             phAdmin.Visible = isAdmin;

@@ -33,14 +33,14 @@ namespace Music_Studio_Booking
                 return;
             }
 
-            //getting the connection string sa Web.config to connect to the database
+            //getting the connection string from Web.config to connect to the database
             string connString = ConfigurationManager.ConnectionStrings["MyStudioConnString"].ConnectionString;
             string storedHash = "";
             string userName = "";
             int userId = 0;
             string userEmail = "";
 
-            //opening the database connection, it will automatically close pagkatapos ng using block
+            //opening the database connection, it will automatically close pagtapos ng using block
             using (SqlConnection con = new SqlConnection(connString))
             {
                 string query = "SELECT UserID, FullName, PasswordHash, Email FROM Users WHERE Email = @Email";
@@ -70,7 +70,7 @@ namespace Music_Studio_Booking
                 Session["UserEmail"] = userEmail;
                 Session["IsAdmin"] = IsAdminUser(userEmail, userName);
 
-                //redirecting them sa tamang page depending on their admin status
+                //redirecting them to diff pages depending on their admin status
                 if ((bool)Session["IsAdmin"])
                 {
                     Response.Redirect("StaffRequests.aspx");
